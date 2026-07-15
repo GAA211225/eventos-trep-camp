@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101a2e">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>TREP CAMP · Organizador de Eventos</title>
+<style>
+  :root {
+    --bg: #f4f6fa;
+    --panel: #ffffff;
+    --sidebar: #101a2e;
+    --sidebar-hover: #1c2a47;
+    --accent: #2563eb;
+    --accent-soft: #dbeafe;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --danger: #dc2626;
+    --radius: 12px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* ============ SIDEBAR ============ */
+  #sidebar {
+    width: 300px;
+    min-width: 300px;
+    background: var(--sidebar);
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  #sidebar .brand {
+    padding: 20px 18px 14px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  #sidebar .brand h1 {
+    font-size: 19px;
+    letter-spacing: .5px;
+    color: #fff;
+  }
+  #sidebar .brand h1 span { color: #60a5fa; }
+  #sidebar .brand p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  #btnNuevo {
+    margin: 14px 16px 8px;
+    padding: 11px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  #btnNuevo:hover { background: #1d4ed8; }
+  #buscador {
+    margin: 4px 16px 10px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+  }
+  #buscador::placeholder { color: #7c8aa5; }
+  #listaEventos {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 10px 20px;
+  }
+  .evento-item {
+    padding: 12px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 4px;
+    transition: background .12s;
+    border: 1px solid transparent;
+  }
+  .evento-item:hover { background: var(--sidebar-hover); }
+  .evento-item.activo {
+    background: var(--sidebar-hover);
+    border-color: rgba(96,165,250,.45);
+  }
+  .evento-item .nombre {
+    font-size: 14px;
+    font-weight: 600;
+    color: #f1f5f9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .evento-item .fecha {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 3px;
+  }
+  .vacio-msg {
+    text-align: center;
+    color: #64748b;
+    font-size: 13px;
+    padding: 30px 16px;
+    line-height: 1.6;
+  }
+
+  /* ============ MAIN ============ */
+  #main {
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 28px 36px 60px;
+  }
+  #pantallaInicio {
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    text-align: center;
+  }
+  #pantallaInicio .icono { font-size: 64px; margin-bottom: 16px; }
+  #pantallaInicio h2 { color: var(--text); margin-bottom: 8px; }
+
+  #detalle { display: none; max-width: 980px; margin: 0 auto; }
+
+  .cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  #tituloEvento {
+    font-size: 26px;
+    font-weight: 700;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    width: 100%;
+    outline: none;
+    border-bottom: 2px solid transparent;
+    padding: 4px 0;
+  }
+  #tituloEvento:focus { border-bottom-color: var(--accent); }
+  #btnEliminar {
+    padding: 9px 16px;
+    background: #fee2e2;
+    color: var(--danger);
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #btnEliminar:hover { background: #fecaca; }
+
+  .tarjeta {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .tarjeta h3 {
+    font-size: 15px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tarjeta h3 .emoji { font-size: 18px; }
+
+  .fila-fecha { display: flex; gap: 16px; flex-wrap: wrap; }
+  .campo { display: flex; flex-direction: column; gap: 6px; }
+  .campo label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+  .campo input, .campo select {
+    padding: 9px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+  }
+  .campo input:focus { border-color: var(--accent); }
+
+  textarea {
+    width: 100%;
+    min-height: 130px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1.6;
+    color: var(--text);
+    resize: vertical;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--accent); }
+  #guion { min-height: 260px; }
+
+  /* ============ ARCHIVOS ============ */
+  .categoria-archivos { margin-bottom: 18px; }
+  .categoria-archivos:last-child { margin-bottom: 0; }
+  .categoria-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .categoria-cabecera .nombre-cat {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .btn-subir {
+    padding: 6px 14px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: none;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-subir:hover { background: #bfdbfe; }
+  .lista-archivos { display: flex; flex-direction: column; gap: 6px; }
+  .archivo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13.5px;
+  }
+  .archivo .info { flex: 1; overflow: hidden; }
+  .archivo .info .fname {
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-weight: 500;
+  }
+  .archivo .info .fsize { font-size: 11.5px; color: var(--muted); }
+  .archivo button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 4px 6px;
+    border-radius: 6px;
+  }
+  .archivo button:hover { background: #e2e8f0; }
+  .sin-archivos { font-size: 12.5px; color: var(--muted); font-style: italic; padding: 4px 2px; }
+
+  .badge-guardado {
+    position: fixed;
+    bottom: 20px;
+    right: 24px;
+    background: #16a34a;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity .3s;
+    pointer-events: none;
+  }
+  .badge-guardado.visible { opacity: 1; }
+
+  /* ============ CONEXIÓN ============ */
+  #estadoConexion {
+    margin: 0 16px 10px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+  #estadoConexion.online { background: rgba(22,163,74,.18); color: #4ade80; }
+  #estadoConexion.offline { background: rgba(220,38,38,.18); color: #f87171; }
+
+  #btnConfig {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 17px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    float: right;
+  }
+  #btnConfig:hover { background: rgba(255,255,255,.08); color: #fff; }
+
+  /* ============ ASISTENTE IA ============ */
+  .cabecera-guion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .cabecera-guion h3 { margin-bottom: 0; }
+  #btnIA {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #7c3aed, #2563eb);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  #btnIA:hover { opacity: .9; }
+  #btnIA:disabled { opacity: .45; cursor: not-allowed; }
+
+  /* ============ MODALES ============ */
+  .modal-fondo {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 16px;
+  }
+  .modal-fondo.abierto { display: flex; }
+  .modal {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    width: 100%;
+    max-width: 720px;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+  }
+  .modal h3 { margin-bottom: 6px; font-size: 17px; }
+  .modal .sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+  .modal textarea { min-height: 80px; }
+  .modal .acciones {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 9px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primario { background: var(--accent); color: #fff; }
+  .btn-primario:hover { background: #1d4ed8; }
+  .btn-primario:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-secundario { background: #e2e8f0; color: var(--text); }
+  .btn-secundario:hover { background: #cbd5e1; }
+  .btn-verde { background: #16a34a; color: #fff; }
+  .btn-verde:hover { background: #15803d; }
+
+  #resultadoIA {
+    display: none;
+    margin-top: 16px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.7;
+    max-height: 45vh;
+    overflow-y: auto;
+  }
+  #cargandoIA {
+    display: none;
+    margin-top: 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .spinner {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border: 3px solid #e2e8f0;
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: girar .8s linear infinite;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes girar { to { transform: rotate(360deg); } }
+  #errorIA {
+    display: none;
+    margin-top: 14px;
+    background: #fee2e2;
+    color: #991b1b;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .campo-clave {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: monospace;
+  }
+
+  @media (max-width: 720px) {
+    body { flex-direction: column; overflow: auto; }
+    #sidebar { width: 100%; min-width: 0; height: auto; max-height: 45vh; }
+    #main { padding: 18px 14px 60px; height: auto; }
+  }
+</style>
+</head>
+<body>
+
+<aside id="sidebar">
+  <div class="brand">
+    <button id="btnConfig" title="Configuración del asistente de IA">⚙️</button>
+    <h1>TREP <span>CAMP</span></h1>
+    <p>Organizador de eventos</p>
+  </div>
+  <button id="btnNuevo">＋ Nuevo evento</button>
+  <div id="estadoConexion" class="online">● En línea</div>
+  <input id="buscador" type="text" placeholder="Buscar evento…">
+  <div id="listaEventos"></div>
+</aside>
+
+<main id="main">
+  <div id="pantallaInicio">
+    <div class="icono">📋</div>
+    <h2>Bienvenido al organizador de TREP CAMP</h2>
+    <p>Crea un evento nuevo o selecciona uno de la lista<br>para gestionar su cronograma, presentaciones, notas y guión.</p>
+  </div>
+
+  <div id="detalle">
+    <div class="cabecera">
+      <input id="tituloEvento" type="text" placeholder="Nombre del evento">
+      <button id="btnEliminar">🗑 Eliminar</button>
+    </div>
+
+    <div class="tarjeta">
+      <h3><span class="emoji">📅</span> Fecha y hora</h3>
+      <div class="fila-fecha">
+        <div class="campo">
+          <label>Día</label>
+          <input type="date" id="fecha">
+        </div>
+        <div class="campo">
+          <label>Hora de inicio</label>
+          <input type="time" id="horaInicio">
+        </div>
+        <div class="campo">
+          <label>Hora de fin</label>
+          <input type="time" id="horaFin">
+        </div>
+        <div class="campo" style="flex:1; min-width:180px;">
+          <label>Lugar</label>
+          <input type="text" id="lugar" placeholder="Lugar del evento (opcional)">
+        </div>
+      </div>
+    </div>
+
+    <div class="tarjeta">
+      <h3><span class="emoji">📁</span> Archivos del evento</h3>
+      <div id="zonaArchivos"></div>
+    </div>
+
+    <div class="tarjeta">
+      <h3><span class="emoji">📝</span> Notas importantes</h3>
+      <textarea id="notas" placeholder="Escribe aquí recordatorios, pendientes, contactos, detalles logísticos…"></textarea>
+    </div>
+
+    <div class="tarjeta">
+      <div class="cabecera-guion">
+        <h3><span class="emoji">🎤</span> Guión</h3>
+        <button id="btnIA">✨ Asistente IA</button>
+      </div>
+      <textarea id="guion" placeholder="Escribe aquí el guión del evento: apertura, presentaciones, transiciones, cierre…"></textarea>
+    </div>
+  </div>
+</main>
+
+<div class="badge-guardado" id="badgeGuardado">✓ Guardado</div>
+<input type="file" id="inputArchivo" multiple hidden>
+
+<!-- Modal: Asistente IA para el guión -->
+<div class="modal-fondo" id="modalIA">
+  <div class="modal">
+    <h3>✨ Asistente de guiones</h3>
+    <p class="sub">La IA te propondrá una versión del guión usando la información del evento (nombre, fecha, lugar y notas). Tú decides si la usas o no — tu guión actual no se toca hasta que aceptes.</p>
+    <label style="font-size:12.5px; font-weight:600; color:var(--muted);">Indicaciones para la IA (opcional)</label>
+    <textarea id="instruccionesIA" placeholder="Ej.: que dure 5 minutos, incluir bienvenida al speaker Juan Pérez, tono juvenil y motivador…"></textarea>
+    <div id="cargandoIA"><span class="spinner"></span> Escribiendo el guión… esto puede tardar un poco.</div>
+    <div id="errorIA"></div>
+    <div id="resultadoIA"></div>
+    <div class="acciones">
+      <button class="btn btn-secundario" id="btnCerrarIA">Cerrar</button>
+      <button class="btn btn-secundario" id="btnRegenerarIA" style="display:none;">🔄 Otra versión</button>
+      <button class="btn btn-verde" id="btnAceptarIA" style="display:none;">✔ Usar esta versión</button>
+      <button class="btn btn-primario" id="btnGenerarIA">✨ Generar propuesta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Configuración -->
+<div class="modal-fondo" id="modalConfig">
+  <div class="modal" style="max-width:520px;">
+    <h3>⚙️ Configuración del asistente de IA</h3>
+    <p class="sub">Para usar el asistente de guiones necesitas una clave API de Claude (Anthropic). Se guarda únicamente en este dispositivo, dentro del navegador — nunca se comparte con nadie más. Consíguela en <b>platform.claude.com</b> → API Keys.</p>
+    <label style="font-size:12.5px; font-weight:600; color:var(--muted);">Clave API</label>
+    <input type="password" id="claveAPI" class="campo-clave" placeholder="sk-ant-…">
+    <div class="acciones">
+      <button class="btn btn-secundario" id="btnCerrarConfig">Cancelar</button>
+      <button class="btn btn-primario" id="btnGuardarConfig">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ================= Base de datos (IndexedDB) =================
+const DB_NAME = 'trepcamp-eventos';
+let db;
+
+const CATEGORIAS = [
+  { id: 'cronograma',   nombre: 'Cronograma',                emoji: '🗓️' },
+  { id: 'pres-speaker', nombre: 'Presentación del speaker',  emoji: '🎙️' },
+  { id: 'pres-propia',  nombre: 'Presentación propia',       emoji: '💻' },
+  { id: 'otros',        nombre: 'Otros archivos',            emoji: '📎' },
+];
+
+function abrirDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, 1);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('eventos'))
+        d.createObjectStore('eventos', { keyPath: 'id' });
+      if (!d.objectStoreNames.contains('archivos')) {
+        const st = d.createObjectStore('archivos', { keyPath: 'id' });
+        st.createIndex('porEvento', 'eventoId');
+      }
+    };
+    req.onsuccess = e => { db = e.target.result; res(); };
+    req.onerror = () => rej(req.error);
+  });
+}
+
+const tx = (store, mode) => db.transaction(store, mode).objectStore(store);
+const pReq = req => new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
+
+const guardarEvento  = ev => pReq(tx('eventos', 'readwrite').put(ev));
+const listarEventos  = () => pReq(tx('eventos', 'readonly').getAll());
+const borrarEvento   = id => pReq(tx('eventos', 'readwrite').delete(id));
+const guardarArchivo = a  => pReq(tx('archivos', 'readwrite').put(a));
+const borrarArchivo  = id => pReq(tx('archivos', 'readwrite').delete(id));
+const archivosDeEvento = eventoId =>
+  pReq(tx('archivos', 'readonly').index('porEvento').getAll(eventoId));
+
+// ================= Estado =================
+let eventos = [];
+let eventoActual = null;
+let categoriaSubida = null;
+let timerGuardado = null;
+
+const $ = id => document.getElementById(id);
+
+// ================= Lista lateral =================
+function formatearFecha(ev) {
+  if (!ev.fecha) return 'Sin fecha';
+  const [y, m, d] = ev.fecha.split('-');
+  const f = new Date(y, m - 1, d);
+  let txt = f.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  if (ev.horaInicio) txt += ' · ' + ev.horaInicio;
+  return txt;
+}
+
+function renderLista() {
+  const cont = $('listaEventos');
+  const filtro = $('buscador').value.trim().toLowerCase();
+  const visibles = eventos
+    .filter(e => !filtro || (e.nombre || '').toLowerCase().includes(filtro))
+    .sort((a, b) => (b.fecha || '') > (a.fecha || '') ? -1 : 1);
+
+  cont.innerHTML = '';
+  if (!visibles.length) {
+    cont.innerHTML = `<div class="vacio-msg">${filtro ? 'No hay eventos que coincidan.' : 'Aún no hay eventos.<br>Crea el primero con el botón de arriba.'}</div>`;
+    return;
+  }
+  for (const ev of visibles) {
+    const div = document.createElement('div');
+    div.className = 'evento-item' + (eventoActual && ev.id === eventoActual.id ? ' activo' : '');
+    div.innerHTML = `
+      <div class="nombre">${escapar(ev.nombre) || '(Sin nombre)'}</div>
+      <div class="fecha">📅 ${formatearFecha(ev)}</div>`;
+    div.onclick = () => abrirEvento(ev.id);
+    cont.appendChild(div);
+  }
+}
+
+function escapar(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ================= Detalle =================
+async function abrirEvento(id) {
+  eventoActual = eventos.find(e => e.id === id);
+  if (!eventoActual) return;
+  $('pantallaInicio').style.display = 'none';
+  $('detalle').style.display = 'block';
+
+  $('tituloEvento').value = eventoActual.nombre || '';
+  $('fecha').value      = eventoActual.fecha || '';
+  $('horaInicio').value = eventoActual.horaInicio || '';
+  $('horaFin').value    = eventoActual.horaFin || '';
+  $('lugar').value      = eventoActual.lugar || '';
+  $('notas').value      = eventoActual.notas || '';
+  $('guion').value      = eventoActual.guion || '';
+
+  renderLista();
+  await renderArchivos();
+}
+
+async function renderArchivos() {
+  const zona = $('zonaArchivos');
+  const archivos = eventoActual ? await archivosDeEvento(eventoActual.id) : [];
+  zona.innerHTML = '';
+
+  for (const cat of CATEGORIAS) {
+    const deCat = archivos.filter(a => a.categoria === cat.id);
+    const div = document.createElement('div');
+    div.className = 'categoria-archivos';
+
+    const cab = document.createElement('div');
+    cab.className = 'categoria-cabecera';
+    cab.innerHTML = `<span class="nombre-cat">${cat.emoji} ${cat.nombre}</span>`;
+    const btn = document.createElement('button');
+    btn.className = 'btn-subir';
+    btn.textContent = '⬆ Subir archivo';
+    btn.onclick = () => { categoriaSubida = cat.id; $('inputArchivo').click(); };
+    cab.appendChild(btn);
+    div.appendChild(cab);
+
+    const lista = document.createElement('div');
+    lista.className = 'lista-archivos';
+    if (!deCat.length) {
+      lista.innerHTML = '<div class="sin-archivos">Sin archivos todavía</div>';
+    } else {
+      for (const a of deCat) {
+        const fila = document.createElement('div');
+        fila.className = 'archivo';
+        fila.innerHTML = `
+          <span>📄</span>
+          <div class="info">
+            <div class="fname">${escapar(a.nombre)}</div>
+            <div class="fsize">${tamanoLegible(a.tamano)}</div>
+          </div>`;
+        const bDesc = document.createElement('button');
+        bDesc.title = 'Descargar / abrir';
+        bDesc.textContent = '⬇️';
+        bDesc.onclick = () => descargarArchivo(a);
+        const bDel = document.createElement('button');
+        bDel.title = 'Eliminar archivo';
+        bDel.textContent = '🗑️';
+        bDel.onclick = async () => {
+          if (confirm(`¿Eliminar el archivo "${a.nombre}"?`)) {
+            await borrarArchivo(a.id);
+            renderArchivos();
+          }
+        };
+        fila.appendChild(bDesc);
+        fila.appendChild(bDel);
+        lista.appendChild(fila);
+      }
+    }
+    div.appendChild(lista);
+    zona.appendChild(div);
+  }
+}
+
+function tamanoLegible(b) {
+  if (b == null) return '';
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+  return (b / 1048576).toFixed(1) + ' MB';
+}
+
+function descargarArchivo(a) {
+  const url = URL.createObjectURL(a.blob);
+  const enlace = document.createElement('a');
+  enlace.href = url;
+  enlace.download = a.nombre;
+  enlace.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ================= Guardado automático =================
+function programarGuardado() {
+  if (!eventoActual) return;
+  eventoActual.nombre     = $('tituloEvento').value;
+  eventoActual.fecha      = $('fecha').value;
+  eventoActual.horaInicio = $('horaInicio').value;
+  eventoActual.horaFin    = $('horaFin').value;
+  eventoActual.lugar      = $('lugar').value;
+  eventoActual.notas      = $('notas').value;
+  eventoActual.guion      = $('guion').value;
+
+  clearTimeout(timerGuardado);
+  timerGuardado = setTimeout(async () => {
+    await guardarEvento(eventoActual);
+    renderLista();
+    mostrarBadge();
+  }, 500);
+}
+
+let timerBadge = null;
+function mostrarBadge() {
+  const badge = $('badgeGuardado');
+  badge.classList.add('visible');
+  clearTimeout(timerBadge);
+  timerBadge = setTimeout(() => badge.classList.remove('visible'), 1500);
+}
+
+// ================= Acciones =================
+$('btnNuevo').onclick = async () => {
+  const ev = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+    nombre: '', fecha: '', horaInicio: '', horaFin: '',
+    lugar: '', notas: '', guion: '',
+    creado: new Date().toISOString(),
+  };
+  eventos.push(ev);
+  await guardarEvento(ev);
+  await abrirEvento(ev.id);
+  $('tituloEvento').focus();
+};
+
+$('btnEliminar').onclick = async () => {
+  if (!eventoActual) return;
+  const nombre = eventoActual.nombre || '(sin nombre)';
+  if (!confirm(`¿Eliminar el evento "${nombre}" con todos sus archivos, notas y guión?\nEsta acción no se puede deshacer.`)) return;
+  const archivos = await archivosDeEvento(eventoActual.id);
+  for (const a of archivos) await borrarArchivo(a.id);
+  await borrarEvento(eventoActual.id);
+  eventos = eventos.filter(e => e.id !== eventoActual.id);
+  eventoActual = null;
+  $('detalle').style.display = 'none';
+  $('pantallaInicio').style.display = 'flex';
+  renderLista();
+};
+
+$('inputArchivo').onchange = async e => {
+  if (!eventoActual || !categoriaSubida) return;
+  for (const f of e.target.files) {
+    await guardarArchivo({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+      eventoId: eventoActual.id,
+      categoria: categoriaSubida,
+      nombre: f.name,
+      tamano: f.size,
+      tipo: f.type,
+      blob: f,
+    });
+  }
+  e.target.value = '';
+  await renderArchivos();
+  mostrarBadge();
+};
+
+['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion']
+  .forEach(id => $(id).addEventListener('input', programarGuardado));
+
+$('buscador').addEventListener('input', renderLista);
+
+// ================= PWA: service worker =================
+// Solo se registra cuando la app corre como página web (http/https).
+// Al abrir el archivo directamente (file://) la app funciona igual, sin SW.
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
+// ================= Estado de conexión =================
+function actualizarConexion() {
+  const el = $('estadoConexion');
+  if (navigator.onLine) {
+    el.className = 'online';
+    el.textContent = '● En línea — cambios y IA disponibles';
+  } else {
+    el.className = 'offline';
+    el.textContent = '● Sin conexión — puedes seguir trabajando';
+  }
+  actualizarBotonIA();
+}
+window.addEventListener('online', actualizarConexion);
+window.addEventListener('offline', actualizarConexion);
+
+function actualizarBotonIA() {
+  const btn = $('btnIA');
+  if (!navigator.onLine) {
+    btn.disabled = true;
+    btn.title = 'El asistente de IA solo funciona con internet';
+  } else {
+    btn.disabled = false;
+    btn.title = '';
+  }
+}
+
+// ================= Configuración (clave API) =================
+const CLAVE_STORAGE = 'trepcamp-clave-api';
+const obtenerClave = () => localStorage.getItem(CLAVE_STORAGE) || '';
+
+$('btnConfig').onclick = () => {
+  $('claveAPI').value = obtenerClave();
+  $('modalConfig').classList.add('abierto');
+};
+$('btnCerrarConfig').onclick = () => $('modalConfig').classList.remove('abierto');
+$('btnGuardarConfig').onclick = () => {
+  localStorage.setItem(CLAVE_STORAGE, $('claveAPI').value.trim());
+  $('modalConfig').classList.remove('abierto');
+  mostrarBadge();
+};
+
+// ================= Asistente IA para el guión =================
+let textoPropuesto = '';
+
+$('btnIA').onclick = () => {
+  if (!eventoActual) return;
+  if (!obtenerClave()) {
+    $('claveAPI').value = '';
+    $('modalConfig').classList.add('abierto');
+    return;
+  }
+  textoPropuesto = '';
+  $('resultadoIA').style.display = 'none';
+  $('errorIA').style.display = 'none';
+  $('btnAceptarIA').style.display = 'none';
+  $('btnRegenerarIA').style.display = 'none';
+  $('btnGenerarIA').style.display = '';
+  $('modalIA').classList.add('abierto');
+};
+
+$('btnCerrarIA').onclick = () => $('modalIA').classList.remove('abierto');
+$('btnGenerarIA').onclick = generarGuion;
+$('btnRegenerarIA').onclick = generarGuion;
+
+$('btnAceptarIA').onclick = () => {
+  if (!eventoActual || !textoPropuesto) return;
+  $('guion').value = textoPropuesto;
+  programarGuardado();
+  $('modalIA').classList.remove('abierto');
+};
+
+async function generarGuion() {
+  if (!navigator.onLine) {
+    mostrarErrorIA('No hay conexión a internet. El asistente de IA solo funciona en línea.');
+    return;
+  }
+  const guionActual = $('guion').value.trim();
+  const instrucciones = $('instruccionesIA').value.trim();
+
+  const contexto = [
+    `Nombre del evento: ${eventoActual.nombre || '(sin nombre)'}`,
+    eventoActual.fecha ? `Fecha: ${formatearFecha(eventoActual)}` : '',
+    eventoActual.lugar ? `Lugar: ${eventoActual.lugar}` : '',
+    eventoActual.notas ? `Notas importantes del organizador:\n${eventoActual.notas}` : '',
+  ].filter(Boolean).join('\n');
+
+  const pedido = guionActual
+    ? `Este es el guión actual del evento. Proponme una versión mejorada, conservando la información y estructura que ya sirve:\n\n${guionActual}`
+    : 'Aún no hay guión. Escribe una propuesta completa de guión para este evento.';
+
+  const extra = instrucciones ? `\n\nIndicaciones adicionales del organizador: ${instrucciones}` : '';
+
+  $('cargandoIA').style.display = 'block';
+  $('errorIA').style.display = 'none';
+  $('resultadoIA').style.display = 'none';
+  $('btnGenerarIA').disabled = true;
+  $('btnRegenerarIA').disabled = true;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'x-api-key': obtenerClave(),
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-8',
+        max_tokens: 8000,
+        system: 'Eres un guionista experto en eventos de emprendimiento y educación de TREP CAMP. Escribes guiones para maestros de ceremonia y presentadores en español. Tu estilo es cálido, cercano, natural y motivador: nada acartonado ni seco, con energía, humor ligero cuando corresponde y frases que conectan con el público. Estructura los guiones con secciones claras (apertura, presentaciones, transiciones, cierre) e incluye acotaciones útiles entre corchetes, como [pausa] o [aplausos]. Responde únicamente con el guión, sin comentarios adicionales antes o después.',
+        messages: [{ role: 'user', content: `${contexto}\n\n${pedido}${extra}` }],
+      }),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => null);
+      const msg = err?.error?.message || `Error ${resp.status}`;
+      if (resp.status === 401) {
+        mostrarErrorIA('La clave API no es válida. Revísala en el botón ⚙️ de la barra lateral.');
+      } else if (resp.status === 429) {
+        mostrarErrorIA('Se alcanzó el límite de uso de la IA. Espera un momento e inténtalo de nuevo.');
+      } else {
+        mostrarErrorIA('No se pudo generar el guión: ' + msg);
+      }
+      return;
+    }
+
+    const data = await resp.json();
+    textoPropuesto = (data.content || [])
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('\n')
+      .trim();
+
+    if (!textoPropuesto) {
+      mostrarErrorIA('La IA no devolvió texto. Inténtalo de nuevo.');
+      return;
+    }
+
+    $('resultadoIA').textContent = textoPropuesto;
+    $('resultadoIA').style.display = 'block';
+    $('btnAceptarIA').style.display = '';
+    $('btnRegenerarIA').style.display = '';
+    $('btnGenerarIA').style.display = 'none';
+  } catch (e) {
+    mostrarErrorIA('No se pudo conectar con el servicio de IA. Revisa tu conexión a internet e inténtalo de nuevo.');
+  } finally {
+    $('cargandoIA').style.display = 'none';
+    $('btnGenerarIA').disabled = false;
+    $('btnRegenerarIA').disabled = false;
+  }
+}
+
+function mostrarErrorIA(msg) {
+  const el = $('errorIA');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ================= Inicio =================
+(async () => {
+  await abrirDB();
+  eventos = await listarEventos();
+  renderLista();
+  actualizarConexion();
+})();
+</script>
+</body>
+</html>
