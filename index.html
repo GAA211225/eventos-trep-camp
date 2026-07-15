@@ -534,9 +534,9 @@
 <div class="modal-fondo" id="modalConfig">
   <div class="modal" style="max-width:520px;">
     <h3>⚙️ Configuración del asistente de IA</h3>
-    <p class="sub">Para usar el asistente de guiones necesitas una clave API de Claude (Anthropic). Se guarda únicamente en este dispositivo, dentro del navegador — nunca se comparte con nadie más. Consíguela en <b>platform.claude.com</b> → API Keys.</p>
-    <label style="font-size:12.5px; font-weight:600; color:var(--muted);">Clave API</label>
-    <input type="password" id="claveAPI" class="campo-clave" placeholder="sk-ant-…">
+    <p class="sub">El asistente usa <b>Google Gemini</b>, que es gratuito. Consigue tu clave en <b>aistudio.google.com</b> → "Get API key" (solo necesitas tu cuenta de Google, sin tarjeta). La clave se guarda únicamente en este dispositivo, dentro del navegador.</p>
+    <label style="font-size:12.5px; font-weight:600; color:var(--muted);">Clave API de Google Gemini</label>
+    <input type="password" id="claveAPI" class="campo-clave" placeholder="AIza…">
     <div class="acciones">
       <button class="btn btn-secundario" id="btnCerrarConfig">Cancelar</button>
       <button class="btn btn-primario" id="btnGuardarConfig">Guardar</button>
@@ -833,7 +833,7 @@ function actualizarBotonIA() {
 }
 
 // ================= Configuración (clave API) =================
-const CLAVE_STORAGE = 'trepcamp-clave-api';
+const CLAVE_STORAGE = 'trepcamp-clave-gemini';
 const obtenerClave = () => localStorage.getItem(CLAVE_STORAGE) || '';
 
 $('btnConfig').onclick = () => {
@@ -905,29 +905,28 @@ async function generarGuion() {
   $('btnRegenerarIA').disabled = true;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': obtenerClave(),
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
+        'x-goog-api-key': obtenerClave(),
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-8',
-        max_tokens: 8000,
-        system: 'Eres un guionista experto en eventos de emprendimiento y educación de TREP CAMP. Escribes guiones para maestros de ceremonia y presentadores en español. Tu estilo es cálido, cercano, natural y motivador: nada acartonado ni seco, con energía, humor ligero cuando corresponde y frases que conectan con el público. Estructura los guiones con secciones claras (apertura, presentaciones, transiciones, cierre) e incluye acotaciones útiles entre corchetes, como [pausa] o [aplausos]. Responde únicamente con el guión, sin comentarios adicionales antes o después.',
-        messages: [{ role: 'user', content: `${contexto}\n\n${pedido}${extra}` }],
+        system_instruction: {
+          parts: [{ text: 'Eres un guionista experto en eventos de emprendimiento y educación de TREP CAMP. Escribes guiones para maestros de ceremonia y presentadores en español. Tu estilo es cálido, cercano, natural y motivador: nada acartonado ni seco, con energía, humor ligero cuando corresponde y frases que conectan con el público. Estructura los guiones con secciones claras (apertura, presentaciones, transiciones, cierre) e incluye acotaciones útiles entre corchetes, como [pausa] o [aplausos]. Responde únicamente con el guión, sin comentarios adicionales antes o después.' }],
+        },
+        contents: [{ role: 'user', parts: [{ text: `${contexto}\n\n${pedido}${extra}` }] }],
+        generationConfig: { maxOutputTokens: 8000 },
       }),
     });
 
     if (!resp.ok) {
       const err = await resp.json().catch(() => null);
       const msg = err?.error?.message || `Error ${resp.status}`;
-      if (resp.status === 401) {
-        mostrarErrorIA('La clave API no es válida. Revísala en el botón ⚙️ de la barra lateral.');
+      if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
+        mostrarErrorIA('La clave API no es válida. Revísala en el botón ⚙️ de la barra lateral (se consigue gratis en aistudio.google.com).');
       } else if (resp.status === 429) {
-        mostrarErrorIA('Se alcanzó el límite de uso de la IA. Espera un momento e inténtalo de nuevo.');
+        mostrarErrorIA('Se alcanzó el límite gratuito de la IA por ahora. Espera un minuto e inténtalo de nuevo.');
       } else {
         mostrarErrorIA('No se pudo generar el guión: ' + msg);
       }
@@ -935,9 +934,8 @@ async function generarGuion() {
     }
 
     const data = await resp.json();
-    textoPropuesto = (data.content || [])
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
+    textoPropuesto = (data.candidates?.[0]?.content?.parts || [])
+      .map(p => p.text || '')
       .join('\n')
       .trim();
 

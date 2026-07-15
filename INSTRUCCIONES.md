@@ -51,9 +51,9 @@ En la computadora (Chrome/Edge) también: aparece un icono de "instalar" en la b
 - **Sin internet:** la app abre con la última versión descargada y puedes seguir creando eventos, escribiendo notas y guiones, subiendo archivos, etc.
 - **Importante:** los datos (eventos, archivos, guiones) se guardan **en cada dispositivo**. Lo que agregues en el teléfono no aparece en la computadora y viceversa. El asistente de IA **solo** funciona con internet.
 
-## 4. Activar el asistente de IA para guiones
+## 4. Activar el asistente de IA para guiones (gratis)
 
-1. Consigue una clave API de Claude: entra a **https://platform.claude.com** → crea una cuenta → sección **API Keys** → "Create key". (Requiere agregar un método de pago; se cobra por uso, cada guión cuesta unos pocos centavos.)
+1. Consigue una clave gratuita de Google Gemini: entra a **https://aistudio.google.com** con tu cuenta de Google → botón **"Get API key"** → "Create API key". No pide tarjeta ni pago; el nivel gratuito alcanza de sobra para generar guiones.
 2. En la app, pulsa el botón **⚙️** de la barra lateral, pega la clave y guarda.
 3. En cualquier evento, botón **✨ Asistente IA** dentro de la sección Guión:
    - Si no hay guión, propone uno completo usando el nombre, fecha, lugar y notas del evento.
