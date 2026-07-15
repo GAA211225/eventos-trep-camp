@@ -1,5 +1,12 @@
 # TREP CAMP · Organizador de Eventos — Instrucciones
 
+## 🌐 La app ya está publicada
+
+- **Dirección de la app:** https://gaa211225.github.io/eventos-trep-camp/
+- **Repositorio:** https://github.com/GAA211225/eventos-trep-camp
+- Cualquier persona puede abrirla desde esa dirección e instalarla en su teléfono (ver sección 2). Recuerda: cada dispositivo guarda sus propios datos.
+- **Para actualizar la app:** haz los cambios en esta carpeta y súbelos con `git add . && git commit -m "cambios" && git push` (GitHub Pages se actualiza solo en 1-2 minutos).
+
 ## Qué contiene esta carpeta
 
 | Archivo | Para qué sirve |
