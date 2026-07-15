@@ -16,6 +16,30 @@
 | `sw.js` | Hace que funcione sin internet y se actualice sola |
 | `icon-192.png`, `icon-512.png` | Íconos de la app |
 
+## ☁️ Cuentas, roles y datos en la nube (Supabase)
+
+La app ahora guarda todo en la nube (Supabase) y tiene inicio de sesión con dos roles:
+
+- **Ambassador**: pertenece a un Hub (estado). Crea y edita los eventos de su Hub, sube materiales, escribe guiones y usa el asistente de IA.
+- **Asesor**: entra y ve la lista de los 32 Hubs. Puede abrir cualquiera, revisar sus eventos, leer notas y guiones y descargar materiales — pero no puede modificar ni agregar nada (bloqueado en pantalla y también en el servidor).
+
+### Configuración inicial (una sola vez)
+
+1. Crea una cuenta gratis en **https://supabase.com** → "New project" (elige nombre y contraseña de base de datos; región puede ser la más cercana).
+2. En el proyecto: menú **SQL Editor** → "New query" → pega todo el contenido del archivo `supabase-setup.sql` → botón **Run**. Esto crea las tablas, los permisos y los 32 Hubs.
+3. Menú **Settings → API**: copia la **Project URL** y la clave **anon public**, y pégalas al inicio del `<script>` de `index.html` (donde dice `PEGAR_AQUI…`). La clave "anon" está diseñada para ser pública, no pasa nada porque esté en el repositorio.
+4. (Recomendado) Menú **Authentication → Sign In / Up → Email**: desactiva "Confirm email" para que la gente pueda entrar sin confirmar el correo.
+
+### Administrar quién es quién
+
+Cada persona se registra sola desde la app (nombre, correo y contraseña), pero entra como **pendiente** y no ve nada hasta que tú la actives:
+
+1. En Supabase: menú **Table Editor** → tabla **profiles**.
+2. Busca a la persona por su correo y edita su fila:
+   - Columna **rol**: escribe `ambassador` o `asesor`.
+   - Columna **hub_id**: solo para ambassadors — copia el `id` de su estado desde la tabla **hubs** y pégalo aquí. Los asesores lo dejan vacío.
+3. La persona recarga la app y ya tiene acceso.
+
 ## 0. Usarla en local, sin publicar nada (recomendado si no quieres que sea pública)
 
 - **Doble clic en `INICIAR.bat`** (necesita Node.js instalado, gratis en https://nodejs.org). Se abre la app en el navegador y en la ventana negra aparece también una dirección `http://192.168.x.x:8123` para abrirla desde otros dispositivos **de tu misma red Wi-Fi**. Nada de esto sale a internet.

@@ -8,6 +8,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <title>TREP CAMP · Organizador de Eventos</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #f4f6fa;
@@ -32,6 +33,87 @@
     overflow: hidden;
   }
 
+  /* ============ PANTALLAS COMPLETAS (login / pendiente / hubs) ============ */
+  .pantalla {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 40;
+    overflow-y: auto;
+  }
+  .pantalla.visible { display: block; }
+  .pantalla-centro {
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .caja-login {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 10px 40px rgba(15,23,42,.08);
+  }
+  .caja-login .logo { text-align: center; margin-bottom: 20px; }
+  .caja-login .logo h1 { font-size: 24px; }
+  .caja-login .logo h1 span { color: var(--accent); }
+  .caja-login .logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .caja-login label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin: 14px 0 6px; }
+  .caja-login input {
+    width: 100%;
+    padding: 11px 13px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 14.5px;
+    outline: none;
+  }
+  .caja-login input:focus { border-color: var(--accent); }
+  .caja-login .btn { width: 100%; margin-top: 20px; padding: 12px; font-size: 14.5px; }
+  .caja-login .alterna {
+    text-align: center; margin-top: 16px; font-size: 13.5px; color: var(--muted);
+  }
+  .caja-login .alterna a { color: var(--accent); cursor: pointer; font-weight: 600; text-decoration: none; }
+  .aviso-login {
+    display: none;
+    margin-top: 14px;
+    border-radius: 8px;
+    padding: 11px 13px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .aviso-login.error { background: #fee2e2; color: #991b1b; display: block; }
+  .aviso-login.ok { background: #dcfce7; color: #166534; display: block; }
+
+  /* Vista de hubs (asesor) */
+  #vistaHubs .contenido { max-width: 900px; margin: 0 auto; padding: 40px 24px 60px; }
+  #vistaHubs h2 { margin-bottom: 6px; }
+  #vistaHubs .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .grid-hubs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+  }
+  .tarjeta-hub {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: border-color .12s, transform .12s;
+  }
+  .tarjeta-hub:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .tarjeta-hub .nombre { font-weight: 700; font-size: 15px; }
+  .tarjeta-hub .datos { color: var(--muted); font-size: 12.5px; margin-top: 5px; }
+  .barra-superior {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 10px;
+  }
+
   /* ============ SIDEBAR ============ */
   #sidebar {
     width: 300px;
@@ -43,18 +125,25 @@
     height: 100vh;
   }
   #sidebar .brand {
-    padding: 20px 18px 14px;
+    padding: 18px 18px 12px;
     border-bottom: 1px solid rgba(255,255,255,.08);
   }
-  #sidebar .brand h1 {
-    font-size: 19px;
-    letter-spacing: .5px;
-    color: #fff;
-  }
+  #sidebar .brand h1 { font-size: 19px; letter-spacing: .5px; color: #fff; }
   #sidebar .brand h1 span { color: #60a5fa; }
-  #sidebar .brand p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  #sidebar .brand .hub-nombre { font-size: 13px; color: #93c5fd; margin-top: 3px; font-weight: 600; }
+  #sidebar .brand .usuario { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
+  #btnVolverHubs {
+    margin: 12px 16px 0;
+    padding: 8px;
+    background: rgba(255,255,255,.08);
+    color: #cbd5e1;
+    border: none; border-radius: 8px;
+    font-size: 13px; cursor: pointer;
+    display: none;
+  }
+  #btnVolverHubs:hover { background: rgba(255,255,255,.14); }
   #btnNuevo {
-    margin: 14px 16px 8px;
+    margin: 12px 16px 8px;
     padding: 11px;
     background: var(--accent);
     color: #fff;
@@ -63,9 +152,18 @@
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: background .15s;
   }
   #btnNuevo:hover { background: #1d4ed8; }
+  #estadoConexion {
+    margin: 0 16px 8px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+  #estadoConexion.online { background: rgba(22,163,74,.18); color: #4ade80; }
+  #estadoConexion.offline { background: rgba(220,38,38,.18); color: #f87171; }
   #buscador {
     margin: 4px 16px 10px;
     padding: 9px 12px;
@@ -77,95 +175,72 @@
     outline: none;
   }
   #buscador::placeholder { color: #7c8aa5; }
-  #listaEventos {
-    flex: 1;
-    overflow-y: auto;
-    padding: 4px 10px 20px;
-  }
+  #listaEventos { flex: 1; overflow-y: auto; padding: 4px 10px 10px; }
   .evento-item {
-    padding: 12px 12px;
+    padding: 12px;
     border-radius: 10px;
     cursor: pointer;
     margin-bottom: 4px;
-    transition: background .12s;
     border: 1px solid transparent;
   }
   .evento-item:hover { background: var(--sidebar-hover); }
-  .evento-item.activo {
-    background: var(--sidebar-hover);
-    border-color: rgba(96,165,250,.45);
-  }
+  .evento-item.activo { background: var(--sidebar-hover); border-color: rgba(96,165,250,.45); }
   .evento-item .nombre {
-    font-size: 14px;
-    font-weight: 600;
-    color: #f1f5f9;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 14px; font-weight: 600; color: #f1f5f9;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .evento-item .fecha {
-    font-size: 12px;
-    color: #94a3b8;
-    margin-top: 3px;
+  .evento-item .fecha { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+  .vacio-msg { text-align: center; color: #64748b; font-size: 13px; padding: 30px 16px; line-height: 1.6; }
+  #pieSidebar {
+    padding: 10px 16px 14px;
+    border-top: 1px solid rgba(255,255,255,.08);
+    display: flex; gap: 8px;
   }
-  .vacio-msg {
-    text-align: center;
-    color: #64748b;
-    font-size: 13px;
-    padding: 30px 16px;
-    line-height: 1.6;
+  #pieSidebar button {
+    flex: 1;
+    padding: 8px;
+    background: rgba(255,255,255,.07);
+    color: #cbd5e1;
+    border: none; border-radius: 8px;
+    font-size: 12.5px; cursor: pointer;
   }
+  #pieSidebar button:hover { background: rgba(255,255,255,.14); }
 
   /* ============ MAIN ============ */
-  #main {
-    flex: 1;
-    height: 100vh;
-    overflow-y: auto;
-    padding: 28px 36px 60px;
-  }
+  #main { flex: 1; height: 100vh; overflow-y: auto; padding: 28px 36px 60px; }
   #pantallaInicio {
     height: 80%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--muted);
-    text-align: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--muted); text-align: center;
   }
   #pantallaInicio .icono { font-size: 64px; margin-bottom: 16px; }
   #pantallaInicio h2 { color: var(--text); margin-bottom: 8px; }
 
   #detalle { display: none; max-width: 980px; margin: 0 auto; }
-
-  .cabecera {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 20px;
+  #avisoLectura {
+    display: none;
+    background: #fef9c3;
+    border: 1px solid #fde047;
+    color: #854d0e;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13.5px;
+    margin-bottom: 16px;
   }
+
+  .cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
   #tituloEvento {
-    font-size: 26px;
-    font-weight: 700;
-    border: none;
-    background: transparent;
-    color: var(--text);
-    width: 100%;
-    outline: none;
-    border-bottom: 2px solid transparent;
-    padding: 4px 0;
+    font-size: 26px; font-weight: 700;
+    border: none; background: transparent; color: var(--text);
+    width: 100%; outline: none;
+    border-bottom: 2px solid transparent; padding: 4px 0;
   }
   #tituloEvento:focus { border-bottom-color: var(--accent); }
   #btnEliminar {
-    padding: 9px 16px;
-    background: #fee2e2;
-    color: var(--danger);
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
+    padding: 9px 16px; background: #fee2e2; color: var(--danger);
+    border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
   }
   #btnEliminar:hover { background: #fecaca; }
 
@@ -176,42 +251,25 @@
     padding: 20px 22px;
     margin-bottom: 18px;
   }
-  .tarjeta h3 {
-    font-size: 15px;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+  .tarjeta h3 { font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .tarjeta h3 .emoji { font-size: 18px; }
 
   .fila-fecha { display: flex; gap: 16px; flex-wrap: wrap; }
   .campo { display: flex; flex-direction: column; gap: 6px; }
   .campo label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
-  .campo input, .campo select {
-    padding: 9px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    color: var(--text);
-    background: #fff;
-    outline: none;
+  .campo input {
+    padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: inherit; color: var(--text); background: #fff; outline: none;
   }
   .campo input:focus { border-color: var(--accent); }
+  input:disabled, textarea:disabled { background: #f8fafc !important; color: #475569; cursor: default; }
 
   textarea {
-    width: 100%;
-    min-height: 130px;
+    width: 100%; min-height: 130px;
     padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: inherit;
-    line-height: 1.6;
-    color: var(--text);
-    resize: vertical;
-    outline: none;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: inherit; line-height: 1.6;
+    color: var(--text); resize: vertical; outline: none;
   }
   textarea:focus { border-color: var(--accent); }
   #guion { min-height: 260px; }
@@ -219,160 +277,70 @@
   /* ============ ARCHIVOS ============ */
   .categoria-archivos { margin-bottom: 18px; }
   .categoria-archivos:last-child { margin-bottom: 0; }
-  .categoria-cabecera {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-  }
-  .categoria-cabecera .nombre-cat {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 7px;
-  }
+  .categoria-cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .categoria-cabecera .nombre-cat { font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
   .btn-subir {
-    padding: 6px 14px;
-    background: var(--accent-soft);
-    color: var(--accent);
-    border: none;
-    border-radius: 7px;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
+    padding: 6px 14px; background: var(--accent-soft); color: var(--accent);
+    border: none; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer;
   }
   .btn-subir:hover { background: #bfdbfe; }
   .lista-archivos { display: flex; flex-direction: column; gap: 6px; }
   .archivo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    display: flex; align-items: center; gap: 10px;
     padding: 8px 12px;
     background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    border: 1px solid var(--border); border-radius: 8px;
     font-size: 13.5px;
   }
   .archivo .info { flex: 1; overflow: hidden; }
-  .archivo .info .fname {
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    font-weight: 500;
-  }
+  .archivo .info .fname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
   .archivo .info .fsize { font-size: 11.5px; color: var(--muted); }
-  .archivo button {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    font-size: 15px;
-    padding: 4px 6px;
-    border-radius: 6px;
-  }
+  .archivo button { border: none; background: transparent; cursor: pointer; font-size: 15px; padding: 4px 6px; border-radius: 6px; }
   .archivo button:hover { background: #e2e8f0; }
   .sin-archivos { font-size: 12.5px; color: var(--muted); font-style: italic; padding: 4px 2px; }
 
   .badge-guardado {
-    position: fixed;
-    bottom: 20px;
-    right: 24px;
-    background: #16a34a;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0;
-    transition: opacity .3s;
-    pointer-events: none;
+    position: fixed; bottom: 20px; right: 24px;
+    background: #16a34a; color: #fff;
+    padding: 8px 16px; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+    opacity: 0; transition: opacity .3s; pointer-events: none;
+    z-index: 60;
   }
   .badge-guardado.visible { opacity: 1; }
 
-  /* ============ CONEXIÓN ============ */
-  #estadoConexion {
-    margin: 0 16px 10px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    text-align: center;
-  }
-  #estadoConexion.online { background: rgba(22,163,74,.18); color: #4ade80; }
-  #estadoConexion.offline { background: rgba(220,38,38,.18); color: #f87171; }
-
-  #btnConfig {
-    background: transparent;
-    border: none;
-    color: #94a3b8;
-    cursor: pointer;
-    font-size: 17px;
-    padding: 4px 8px;
-    border-radius: 8px;
-    float: right;
-  }
-  #btnConfig:hover { background: rgba(255,255,255,.08); color: #fff; }
-
   /* ============ ASISTENTE IA ============ */
-  .cabecera-guion {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 14px;
-  }
+  .cabecera-guion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .cabecera-guion h3 { margin-bottom: 0; }
   #btnIA {
     padding: 8px 16px;
     background: linear-gradient(135deg, #7c3aed, #2563eb);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity .15s;
+    color: #fff; border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
   }
   #btnIA:hover { opacity: .9; }
   #btnIA:disabled { opacity: .45; cursor: not-allowed; }
 
   /* ============ MODALES ============ */
   .modal-fondo {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(15,23,42,.55);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 50;
-    padding: 16px;
+    display: none; align-items: center; justify-content: center;
+    z-index: 50; padding: 16px;
   }
   .modal-fondo.abierto { display: flex; }
   .modal {
-    background: #fff;
-    border-radius: 14px;
-    padding: 24px;
-    width: 100%;
-    max-width: 720px;
-    max-height: 88vh;
-    overflow-y: auto;
+    background: #fff; border-radius: 14px; padding: 24px;
+    width: 100%; max-width: 720px; max-height: 88vh; overflow-y: auto;
     box-shadow: 0 20px 50px rgba(0,0,0,.25);
   }
   .modal h3 { margin-bottom: 6px; font-size: 17px; }
   .modal .sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
   .modal textarea { min-height: 80px; }
-  .modal .acciones {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
+  .modal .acciones { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
   .btn {
-    padding: 9px 18px;
-    border: none;
-    border-radius: 8px;
-    font-size: 13.5px;
-    font-weight: 600;
-    cursor: pointer;
+    padding: 9px 18px; border: none; border-radius: 8px;
+    font-size: 13.5px; font-weight: 600; cursor: pointer;
   }
   .btn-primario { background: var(--accent); color: #fff; }
   .btn-primario:hover { background: #1d4ed8; }
@@ -383,84 +351,123 @@
   .btn-verde:hover { background: #15803d; }
 
   #resultadoIA {
-    display: none;
-    margin-top: 16px;
-    background: #f8fafc;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    white-space: pre-wrap;
-    font-size: 14px;
-    line-height: 1.7;
-    max-height: 45vh;
-    overflow-y: auto;
+    display: none; margin-top: 16px;
+    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; white-space: pre-wrap;
+    font-size: 14px; line-height: 1.7;
+    max-height: 45vh; overflow-y: auto;
   }
-  #cargandoIA {
-    display: none;
-    margin-top: 16px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 14px;
-  }
+  #cargandoIA { display: none; margin-top: 16px; text-align: center; color: var(--muted); font-size: 14px; }
   .spinner {
-    display: inline-block;
-    width: 18px; height: 18px;
-    border: 3px solid #e2e8f0;
-    border-top-color: var(--accent);
+    display: inline-block; width: 18px; height: 18px;
+    border: 3px solid #e2e8f0; border-top-color: var(--accent);
     border-radius: 50%;
     animation: girar .8s linear infinite;
-    vertical-align: middle;
-    margin-right: 8px;
+    vertical-align: middle; margin-right: 8px;
   }
   @keyframes girar { to { transform: rotate(360deg); } }
   #errorIA {
-    display: none;
-    margin-top: 14px;
-    background: #fee2e2;
-    color: #991b1b;
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 13px;
-    line-height: 1.5;
+    display: none; margin-top: 14px;
+    background: #fee2e2; color: #991b1b;
+    border-radius: 8px; padding: 12px 14px;
+    font-size: 13px; line-height: 1.5;
   }
   .campo-clave {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: monospace;
+    width: 100%; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 8px;
+    font-size: 14px; font-family: monospace;
   }
 
   @media (max-width: 720px) {
     body { flex-direction: column; overflow: auto; }
-    #sidebar { width: 100%; min-width: 0; height: auto; max-height: 45vh; }
+    #sidebar { width: 100%; min-width: 0; height: auto; max-height: 48vh; }
     #main { padding: 18px 14px 60px; height: auto; }
   }
 </style>
 </head>
 <body>
 
-<aside id="sidebar">
-  <div class="brand">
-    <button id="btnConfig" title="Configuración del asistente de IA">⚙️</button>
-    <h1>TREP <span>CAMP</span></h1>
-    <p>Organizador de eventos</p>
+<!-- ============ PANTALLA: LOGIN ============ -->
+<div class="pantalla visible" id="pantallaLogin">
+  <div class="pantalla-centro">
+    <div class="caja-login">
+      <div class="logo">
+        <h1>TREP <span>CAMP</span></h1>
+        <p>Organizador de eventos</p>
+      </div>
+      <div id="camposRegistro" style="display:none;">
+        <label>Nombre completo</label>
+        <input type="text" id="regNombre" placeholder="Tu nombre">
+      </div>
+      <label>Correo electrónico</label>
+      <input type="email" id="loginCorreo" placeholder="tucorreo@ejemplo.com" autocomplete="username">
+      <label>Contraseña</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+      <div class="aviso-login" id="avisoLogin"></div>
+      <button class="btn btn-primario" id="btnEntrar">Entrar</button>
+      <div class="alterna" id="alternaLogin">
+        ¿No tienes cuenta? <a id="linkRegistro">Regístrate</a>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- ============ PANTALLA: CUENTA PENDIENTE ============ -->
+<div class="pantalla" id="pantallaPendiente">
+  <div class="pantalla-centro">
+    <div class="caja-login" style="text-align:center;">
+      <div style="font-size:52px; margin-bottom:12px;">⏳</div>
+      <h2 style="margin-bottom:8px;">Cuenta en revisión</h2>
+      <p style="color:var(--muted); font-size:14px; line-height:1.6;" id="msgPendiente">
+        Tu cuenta se creó correctamente, pero el administrador de TREP CAMP
+        aún no te asigna un rol (ambassador o asesor). Avísale para que te active.
+      </p>
+      <button class="btn btn-secundario" id="btnSalirPendiente" style="margin-top:20px;">Cerrar sesión</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PANTALLA: HUBS (asesores) ============ -->
+<div class="pantalla" id="vistaHubs">
+  <div class="contenido">
+    <div class="barra-superior">
+      <div>
+        <h2>🌎 Hubs de TREP CAMP</h2>
+        <p class="sub" id="subHubs">Entra a cualquier Hub para revisar sus eventos y materiales.</p>
+      </div>
+      <button class="btn btn-secundario" id="btnSalirHubs">Cerrar sesión</button>
+    </div>
+    <div class="grid-hubs" id="gridHubs"></div>
+  </div>
+</div>
+
+<!-- ============ APP PRINCIPAL ============ -->
+<aside id="sidebar" style="display:none;">
+  <div class="brand">
+    <h1>TREP <span>CAMP</span></h1>
+    <div class="hub-nombre" id="hubNombre"></div>
+    <div class="usuario" id="usuarioInfo"></div>
+  </div>
+  <button id="btnVolverHubs">← Todos los Hubs</button>
   <button id="btnNuevo">＋ Nuevo evento</button>
   <div id="estadoConexion" class="online">● En línea</div>
   <input id="buscador" type="text" placeholder="Buscar evento…">
   <div id="listaEventos"></div>
+  <div id="pieSidebar">
+    <button id="btnConfig" title="Configurar clave de IA">⚙️ IA</button>
+    <button id="btnSalir">Cerrar sesión</button>
+  </div>
 </aside>
 
-<main id="main">
+<main id="main" style="display:none;">
   <div id="pantallaInicio">
     <div class="icono">📋</div>
     <h2>Bienvenido al organizador de TREP CAMP</h2>
-    <p>Crea un evento nuevo o selecciona uno de la lista<br>para gestionar su cronograma, presentaciones, notas y guión.</p>
+    <p id="msgInicio">Selecciona un evento de la lista para ver sus detalles.</p>
   </div>
 
   <div id="detalle">
+    <div id="avisoLectura">👁️ Estás en modo revisión: puedes ver y descargar todo, pero no modificar.</div>
     <div class="cabecera">
       <input id="tituloEvento" type="text" placeholder="Nombre del evento">
       <button id="btnEliminar">🗑 Eliminar</button>
@@ -511,7 +518,7 @@
 <div class="badge-guardado" id="badgeGuardado">✓ Guardado</div>
 <input type="file" id="inputArchivo" multiple hidden>
 
-<!-- Modal: Asistente IA para el guión -->
+<!-- Modal: Asistente IA -->
 <div class="modal-fondo" id="modalIA">
   <div class="modal">
     <h3>✨ Asistente de guiones</h3>
@@ -530,7 +537,7 @@
   </div>
 </div>
 
-<!-- Modal: Configuración -->
+<!-- Modal: Configuración IA -->
 <div class="modal-fondo" id="modalConfig">
   <div class="modal" style="max-width:520px;">
     <h3>⚙️ Configuración del asistente de IA</h3>
@@ -545,9 +552,25 @@
 </div>
 
 <script>
-// ================= Base de datos (IndexedDB) =================
-const DB_NAME = 'trepcamp-eventos';
-let db;
+// ================================================================
+// CONFIGURACIÓN DE SUPABASE
+// Pegar aquí los datos del proyecto (Supabase → Settings → API)
+// ================================================================
+const SUPABASE_URL = 'PEGAR_AQUI_LA_URL_DEL_PROYECTO';
+const SUPABASE_ANON_KEY = 'PEGAR_AQUI_LA_CLAVE_ANON';
+
+const $ = id => document.getElementById(id);
+
+if (SUPABASE_URL.includes('PEGAR')) {
+  document.addEventListener('DOMContentLoaded', () => {
+    const aviso = $('avisoLogin');
+    aviso.className = 'aviso-login error';
+    aviso.textContent = 'La app aún no está conectada a Supabase. Falta configurar SUPABASE_URL y SUPABASE_ANON_KEY en index.html.';
+    $('btnEntrar').disabled = true;
+  });
+}
+
+const sb = supabase.createClient(SUPABASE_URL.includes('PEGAR') ? 'https://placeholder.supabase.co' : SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const CATEGORIAS = [
   { id: 'cronograma',   nombre: 'Cronograma',                emoji: '🗓️' },
@@ -556,62 +579,210 @@ const CATEGORIAS = [
   { id: 'otros',        nombre: 'Otros archivos',            emoji: '📎' },
 ];
 
-function abrirDB() {
-  return new Promise((res, rej) => {
-    const req = indexedDB.open(DB_NAME, 1);
-    req.onupgradeneeded = e => {
-      const d = e.target.result;
-      if (!d.objectStoreNames.contains('eventos'))
-        d.createObjectStore('eventos', { keyPath: 'id' });
-      if (!d.objectStoreNames.contains('archivos')) {
-        const st = d.createObjectStore('archivos', { keyPath: 'id' });
-        st.createIndex('porEvento', 'eventoId');
-      }
-    };
-    req.onsuccess = e => { db = e.target.result; res(); };
-    req.onerror = () => rej(req.error);
-  });
-}
-
-const tx = (store, mode) => db.transaction(store, mode).objectStore(store);
-const pReq = req => new Promise((res, rej) => { req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
-
-const guardarEvento  = ev => pReq(tx('eventos', 'readwrite').put(ev));
-const listarEventos  = () => pReq(tx('eventos', 'readonly').getAll());
-const borrarEvento   = id => pReq(tx('eventos', 'readwrite').delete(id));
-const guardarArchivo = a  => pReq(tx('archivos', 'readwrite').put(a));
-const borrarArchivo  = id => pReq(tx('archivos', 'readwrite').delete(id));
-const archivosDeEvento = eventoId =>
-  pReq(tx('archivos', 'readonly').index('porEvento').getAll(eventoId));
-
 // ================= Estado =================
+let perfil = null;          // { id, nombre, rol, hub_id }
+let hubActual = null;       // { id, nombre }
+let modoLectura = false;    // true para asesores
 let eventos = [];
 let eventoActual = null;
 let categoriaSubida = null;
 let timerGuardado = null;
+let modoRegistro = false;
 
-const $ = id => document.getElementById(id);
+// ================= Navegación entre pantallas =================
+function mostrarPantalla(nombre) {
+  ['pantallaLogin', 'pantallaPendiente', 'vistaHubs'].forEach(p =>
+    $(p).classList.toggle('visible', p === nombre));
+  const app = nombre === 'app';
+  $('sidebar').style.display = app ? 'flex' : 'none';
+  $('main').style.display = app ? 'block' : 'none';
+}
 
-// ================= Lista lateral =================
+// ================= Autenticación =================
+function alternarRegistro() {
+  modoRegistro = !modoRegistro;
+  $('camposRegistro').style.display = modoRegistro ? 'block' : 'none';
+  $('btnEntrar').textContent = modoRegistro ? 'Crear cuenta' : 'Entrar';
+  $('alternaLogin').innerHTML = modoRegistro
+    ? '¿Ya tienes cuenta? <a id="linkRegistro">Inicia sesión</a>'
+    : '¿No tienes cuenta? <a id="linkRegistro">Regístrate</a>';
+  $('linkRegistro').onclick = alternarRegistro;
+  ocultarAvisoLogin();
+}
+$('linkRegistro').onclick = alternarRegistro;
+
+function avisoLogin(msg, tipo = 'error') {
+  const el = $('avisoLogin');
+  el.className = 'aviso-login ' + tipo;
+  el.textContent = msg;
+}
+function ocultarAvisoLogin() { $('avisoLogin').className = 'aviso-login'; }
+
+$('btnEntrar').onclick = async () => {
+  const correo = $('loginCorreo').value.trim();
+  const pass = $('loginPass').value;
+  if (!correo || !pass) { avisoLogin('Escribe tu correo y contraseña.'); return; }
+  $('btnEntrar').disabled = true;
+  ocultarAvisoLogin();
+  try {
+    if (modoRegistro) {
+      const nombre = $('regNombre').value.trim();
+      if (!nombre) { avisoLogin('Escribe tu nombre.'); return; }
+      const { data, error } = await sb.auth.signUp({
+        email: correo, password: pass,
+        options: { data: { nombre } },
+      });
+      if (error) { avisoLogin(traducirErrorAuth(error.message)); return; }
+      if (!data.session) {
+        avisoLogin('Cuenta creada. Revisa tu correo y confirma tu dirección para poder entrar.', 'ok');
+        return;
+      }
+      await iniciarSesion();
+    } else {
+      const { error } = await sb.auth.signInWithPassword({ email: correo, password: pass });
+      if (error) { avisoLogin(traducirErrorAuth(error.message)); return; }
+      await iniciarSesion();
+    }
+  } finally {
+    $('btnEntrar').disabled = false;
+  }
+};
+$('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnEntrar').click(); });
+
+function traducirErrorAuth(msg) {
+  if (/invalid login credentials/i.test(msg)) return 'Correo o contraseña incorrectos.';
+  if (/already registered/i.test(msg)) return 'Ese correo ya tiene una cuenta. Inicia sesión.';
+  if (/at least 6/i.test(msg)) return 'La contraseña debe tener al menos 6 caracteres.';
+  if (/email not confirmed/i.test(msg)) return 'Aún no confirmas tu correo. Revisa tu bandeja de entrada.';
+  if (/rate limit/i.test(msg)) return 'Demasiados intentos. Espera un momento.';
+  return 'No se pudo completar: ' + msg;
+}
+
+async function cerrarSesion() {
+  await sb.auth.signOut();
+  perfil = null; hubActual = null; eventos = []; eventoActual = null;
+  $('detalle').style.display = 'none';
+  $('pantallaInicio').style.display = 'flex';
+  mostrarPantalla('pantallaLogin');
+}
+$('btnSalir').onclick = cerrarSesion;
+$('btnSalirPendiente').onclick = cerrarSesion;
+$('btnSalirHubs').onclick = cerrarSesion;
+
+// ================= Arranque según rol =================
+async function iniciarSesion() {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { mostrarPantalla('pantallaLogin'); return; }
+
+  const { data: p, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if (error || !p) {
+    avisoLogin('No se pudo cargar tu perfil. Intenta de nuevo.');
+    mostrarPantalla('pantallaLogin');
+    return;
+  }
+  perfil = p;
+
+  if (perfil.rol === 'pendiente') { mostrarPantalla('pantallaPendiente'); return; }
+
+  if (perfil.rol === 'asesor') {
+    modoLectura = true;
+    await mostrarHubs();
+    return;
+  }
+
+  // Ambassador
+  modoLectura = false;
+  if (!perfil.hub_id) {
+    $('msgPendiente').textContent = 'Eres ambassador, pero el administrador aún no te asigna un Hub. Avísale para que te lo asigne.';
+    mostrarPantalla('pantallaPendiente');
+    return;
+  }
+  const { data: hub } = await sb.from('hubs').select('*').eq('id', perfil.hub_id).single();
+  await entrarHub(hub, false);
+}
+
+// ================= Vista de Hubs (asesores) =================
+async function mostrarHubs() {
+  mostrarPantalla('vistaHubs');
+  $('gridHubs').innerHTML = '<p style="color:var(--muted);">Cargando Hubs…</p>';
+  const { data: hubs, error } = await sb
+    .from('hubs')
+    .select('id, nombre, eventos(count)')
+    .order('nombre');
+  if (error) {
+    $('gridHubs').innerHTML = '<p style="color:var(--danger);">No se pudieron cargar los Hubs. Revisa tu conexión.</p>';
+    return;
+  }
+  $('subHubs').textContent = `Hola, ${perfil.nombre || 'asesor'}. Entra a cualquier Hub para revisar sus eventos y materiales.`;
+  $('gridHubs').innerHTML = '';
+  for (const h of hubs) {
+    const n = h.eventos?.[0]?.count ?? 0;
+    const div = document.createElement('div');
+    div.className = 'tarjeta-hub';
+    div.innerHTML = `<div class="nombre">📍 ${escapar(h.nombre)}</div>
+                     <div class="datos">${n} evento${n === 1 ? '' : 's'}</div>`;
+    div.onclick = () => entrarHub({ id: h.id, nombre: h.nombre }, true);
+    $('gridHubs').appendChild(div);
+  }
+}
+
+// ================= Entrar a un hub =================
+async function entrarHub(hub, lectura) {
+  hubActual = hub;
+  modoLectura = lectura;
+  eventoActual = null;
+
+  mostrarPantalla('app');
+  $('hubNombre').textContent = '📍 Hub ' + (hub?.nombre || '');
+  $('usuarioInfo').textContent = `${perfil.nombre || perfil.correo} · ${perfil.rol}`;
+  $('btnVolverHubs').style.display = perfil.rol === 'asesor' ? 'block' : 'none';
+  $('btnNuevo').style.display = modoLectura ? 'none' : 'block';
+  $('btnConfig').style.display = modoLectura ? 'none' : 'block';
+  $('detalle').style.display = 'none';
+  $('pantallaInicio').style.display = 'flex';
+  $('msgInicio').textContent = modoLectura
+    ? 'Selecciona un evento de la lista para revisarlo.'
+    : 'Crea un evento nuevo o selecciona uno de la lista.';
+
+  await cargarEventos();
+}
+$('btnVolverHubs').onclick = mostrarHubs;
+
+// ================= Eventos (nube) =================
+async function cargarEventos() {
+  const { data, error } = await sb
+    .from('eventos')
+    .select('*')
+    .eq('hub_id', hubActual.id)
+    .order('fecha', { ascending: false, nullsFirst: false });
+  if (error) {
+    // Sin conexión: usar la última copia guardada en este dispositivo (solo lectura)
+    const cache = localStorage.getItem('cache-eventos-' + hubActual.id);
+    eventos = cache ? JSON.parse(cache) : [];
+  } else {
+    eventos = data;
+    localStorage.setItem('cache-eventos-' + hubActual.id, JSON.stringify(data));
+  }
+  renderLista();
+}
+
 function formatearFecha(ev) {
   if (!ev.fecha) return 'Sin fecha';
   const [y, m, d] = ev.fecha.split('-');
   const f = new Date(y, m - 1, d);
   let txt = f.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  if (ev.horaInicio) txt += ' · ' + ev.horaInicio;
+  if (ev.hora_inicio) txt += ' · ' + ev.hora_inicio;
   return txt;
 }
 
 function renderLista() {
   const cont = $('listaEventos');
   const filtro = $('buscador').value.trim().toLowerCase();
-  const visibles = eventos
-    .filter(e => !filtro || (e.nombre || '').toLowerCase().includes(filtro))
-    .sort((a, b) => (b.fecha || '') > (a.fecha || '') ? -1 : 1);
+  const visibles = eventos.filter(e => !filtro || (e.nombre || '').toLowerCase().includes(filtro));
 
   cont.innerHTML = '';
   if (!visibles.length) {
-    cont.innerHTML = `<div class="vacio-msg">${filtro ? 'No hay eventos que coincidan.' : 'Aún no hay eventos.<br>Crea el primero con el botón de arriba.'}</div>`;
+    cont.innerHTML = `<div class="vacio-msg">${filtro ? 'No hay eventos que coincidan.' : (modoLectura ? 'Este Hub aún no tiene eventos.' : 'Aún no hay eventos.<br>Crea el primero con el botón de arriba.')}</div>`;
     return;
   }
   for (const ev of visibles) {
@@ -629,7 +800,6 @@ function escapar(s) {
   return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-// ================= Detalle =================
 async function abrirEvento(id) {
   eventoActual = eventos.find(e => e.id === id);
   if (!eventoActual) return;
@@ -638,19 +808,109 @@ async function abrirEvento(id) {
 
   $('tituloEvento').value = eventoActual.nombre || '';
   $('fecha').value      = eventoActual.fecha || '';
-  $('horaInicio').value = eventoActual.horaInicio || '';
-  $('horaFin').value    = eventoActual.horaFin || '';
+  $('horaInicio').value = eventoActual.hora_inicio || '';
+  $('horaFin').value    = eventoActual.hora_fin || '';
   $('lugar').value      = eventoActual.lugar || '';
   $('notas').value      = eventoActual.notas || '';
   $('guion').value      = eventoActual.guion || '';
+
+  // Modo lectura: bloquear todo
+  ['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion']
+    .forEach(cid => $(cid).disabled = modoLectura);
+  $('btnEliminar').style.display = modoLectura ? 'none' : 'block';
+  $('btnIA').style.display = modoLectura ? 'none' : 'block';
+  $('avisoLectura').style.display = modoLectura ? 'block' : 'none';
 
   renderLista();
   await renderArchivos();
 }
 
+$('btnNuevo').onclick = async () => {
+  if (modoLectura) return;
+  const { data, error } = await sb
+    .from('eventos')
+    .insert({ hub_id: hubActual.id, creado_por: perfil.id })
+    .select()
+    .single();
+  if (error) { mostrarBadgeError('No se pudo crear el evento. Revisa tu conexión.'); return; }
+  eventos.unshift(data);
+  await abrirEvento(data.id);
+  $('tituloEvento').focus();
+};
+
+$('btnEliminar').onclick = async () => {
+  if (!eventoActual || modoLectura) return;
+  const nombre = eventoActual.nombre || '(sin nombre)';
+  if (!confirm(`¿Eliminar el evento "${nombre}" con todos sus archivos, notas y guión?\nEsta acción no se puede deshacer.`)) return;
+
+  // Borrar archivos del almacenamiento primero
+  const { data: archivos } = await sb.from('archivos').select('ruta').eq('evento_id', eventoActual.id);
+  if (archivos?.length) {
+    await sb.storage.from('archivos').remove(archivos.map(a => a.ruta));
+  }
+  const { error } = await sb.from('eventos').delete().eq('id', eventoActual.id);
+  if (error) { mostrarBadgeError('No se pudo eliminar. Revisa tu conexión.'); return; }
+
+  eventos = eventos.filter(e => e.id !== eventoActual.id);
+  eventoActual = null;
+  $('detalle').style.display = 'none';
+  $('pantallaInicio').style.display = 'flex';
+  renderLista();
+};
+
+// ================= Guardado automático =================
+function programarGuardado() {
+  if (!eventoActual || modoLectura) return;
+  eventoActual.nombre      = $('tituloEvento').value;
+  eventoActual.fecha       = $('fecha').value || null;
+  eventoActual.hora_inicio = $('horaInicio').value;
+  eventoActual.hora_fin    = $('horaFin').value;
+  eventoActual.lugar       = $('lugar').value;
+  eventoActual.notas       = $('notas').value;
+  eventoActual.guion       = $('guion').value;
+
+  clearTimeout(timerGuardado);
+  timerGuardado = setTimeout(async () => {
+    const { error } = await sb.from('eventos').update({
+      nombre: eventoActual.nombre,
+      fecha: eventoActual.fecha,
+      hora_inicio: eventoActual.hora_inicio,
+      hora_fin: eventoActual.hora_fin,
+      lugar: eventoActual.lugar,
+      notas: eventoActual.notas,
+      guion: eventoActual.guion,
+      actualizado_en: new Date().toISOString(),
+    }).eq('id', eventoActual.id);
+    if (error) { mostrarBadgeError('Sin conexión: el cambio no se guardó'); return; }
+    localStorage.setItem('cache-eventos-' + hubActual.id, JSON.stringify(eventos));
+    renderLista();
+    mostrarBadge();
+  }, 700);
+}
+
+['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion']
+  .forEach(id => $(id).addEventListener('input', programarGuardado));
+$('buscador').addEventListener('input', renderLista);
+
+let timerBadge = null;
+function mostrarBadge(texto = '✓ Guardado', color = '#16a34a') {
+  const badge = $('badgeGuardado');
+  badge.textContent = texto;
+  badge.style.background = color;
+  badge.classList.add('visible');
+  clearTimeout(timerBadge);
+  timerBadge = setTimeout(() => badge.classList.remove('visible'), 2200);
+}
+function mostrarBadgeError(texto) { mostrarBadge('⚠ ' + texto, '#dc2626'); }
+
+// ================= Archivos (nube) =================
 async function renderArchivos() {
   const zona = $('zonaArchivos');
-  const archivos = eventoActual ? await archivosDeEvento(eventoActual.id) : [];
+  let archivos = [];
+  if (eventoActual) {
+    const { data } = await sb.from('archivos').select('*').eq('evento_id', eventoActual.id).order('creado_en');
+    archivos = data || [];
+  }
   zona.innerHTML = '';
 
   for (const cat of CATEGORIAS) {
@@ -661,11 +921,13 @@ async function renderArchivos() {
     const cab = document.createElement('div');
     cab.className = 'categoria-cabecera';
     cab.innerHTML = `<span class="nombre-cat">${cat.emoji} ${cat.nombre}</span>`;
-    const btn = document.createElement('button');
-    btn.className = 'btn-subir';
-    btn.textContent = '⬆ Subir archivo';
-    btn.onclick = () => { categoriaSubida = cat.id; $('inputArchivo').click(); };
-    cab.appendChild(btn);
+    if (!modoLectura) {
+      const btn = document.createElement('button');
+      btn.className = 'btn-subir';
+      btn.textContent = '⬆ Subir archivo';
+      btn.onclick = () => { categoriaSubida = cat.id; $('inputArchivo').click(); };
+      cab.appendChild(btn);
+    }
     div.appendChild(cab);
 
     const lista = document.createElement('div');
@@ -686,17 +948,19 @@ async function renderArchivos() {
         bDesc.title = 'Descargar / abrir';
         bDesc.textContent = '⬇️';
         bDesc.onclick = () => descargarArchivo(a);
-        const bDel = document.createElement('button');
-        bDel.title = 'Eliminar archivo';
-        bDel.textContent = '🗑️';
-        bDel.onclick = async () => {
-          if (confirm(`¿Eliminar el archivo "${a.nombre}"?`)) {
-            await borrarArchivo(a.id);
-            renderArchivos();
-          }
-        };
         fila.appendChild(bDesc);
-        fila.appendChild(bDel);
+        if (!modoLectura) {
+          const bDel = document.createElement('button');
+          bDel.title = 'Eliminar archivo';
+          bDel.textContent = '🗑️';
+          bDel.onclick = async () => {
+            if (!confirm(`¿Eliminar el archivo "${a.nombre}"?`)) return;
+            await sb.storage.from('archivos').remove([a.ruta]);
+            await sb.from('archivos').delete().eq('id', a.id);
+            renderArchivos();
+          };
+          fila.appendChild(bDel);
+        }
         lista.appendChild(fila);
       }
     }
@@ -712,81 +976,21 @@ function tamanoLegible(b) {
   return (b / 1048576).toFixed(1) + ' MB';
 }
 
-function descargarArchivo(a) {
-  const url = URL.createObjectURL(a.blob);
-  const enlace = document.createElement('a');
-  enlace.href = url;
-  enlace.download = a.nombre;
-  enlace.click();
-  setTimeout(() => URL.revokeObjectURL(url), 2000);
-}
-
-// ================= Guardado automático =================
-function programarGuardado() {
-  if (!eventoActual) return;
-  eventoActual.nombre     = $('tituloEvento').value;
-  eventoActual.fecha      = $('fecha').value;
-  eventoActual.horaInicio = $('horaInicio').value;
-  eventoActual.horaFin    = $('horaFin').value;
-  eventoActual.lugar      = $('lugar').value;
-  eventoActual.notas      = $('notas').value;
-  eventoActual.guion      = $('guion').value;
-
-  clearTimeout(timerGuardado);
-  timerGuardado = setTimeout(async () => {
-    await guardarEvento(eventoActual);
-    renderLista();
-    mostrarBadge();
-  }, 500);
-}
-
-let timerBadge = null;
-function mostrarBadge() {
-  const badge = $('badgeGuardado');
-  badge.classList.add('visible');
-  clearTimeout(timerBadge);
-  timerBadge = setTimeout(() => badge.classList.remove('visible'), 1500);
-}
-
-// ================= Acciones =================
-$('btnNuevo').onclick = async () => {
-  const ev = {
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-    nombre: '', fecha: '', horaInicio: '', horaFin: '',
-    lugar: '', notas: '', guion: '',
-    creado: new Date().toISOString(),
-  };
-  eventos.push(ev);
-  await guardarEvento(ev);
-  await abrirEvento(ev.id);
-  $('tituloEvento').focus();
-};
-
-$('btnEliminar').onclick = async () => {
-  if (!eventoActual) return;
-  const nombre = eventoActual.nombre || '(sin nombre)';
-  if (!confirm(`¿Eliminar el evento "${nombre}" con todos sus archivos, notas y guión?\nEsta acción no se puede deshacer.`)) return;
-  const archivos = await archivosDeEvento(eventoActual.id);
-  for (const a of archivos) await borrarArchivo(a.id);
-  await borrarEvento(eventoActual.id);
-  eventos = eventos.filter(e => e.id !== eventoActual.id);
-  eventoActual = null;
-  $('detalle').style.display = 'none';
-  $('pantallaInicio').style.display = 'flex';
-  renderLista();
-};
-
 $('inputArchivo').onchange = async e => {
-  if (!eventoActual || !categoriaSubida) return;
+  if (!eventoActual || !categoriaSubida || modoLectura) return;
+  mostrarBadge('⬆ Subiendo…', '#2563eb');
   for (const f of e.target.files) {
-    await guardarArchivo({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      eventoId: eventoActual.id,
+    const ruta = `${hubActual.id}/${eventoActual.id}/${crypto.randomUUID()}-${f.name.replace(/[^\w.\-áéíóúñÁÉÍÓÚÑ ]/g, '_')}`;
+    const { error: errSubida } = await sb.storage.from('archivos').upload(ruta, f);
+    if (errSubida) { mostrarBadgeError('No se pudo subir ' + f.name); continue; }
+    await sb.from('archivos').insert({
+      evento_id: eventoActual.id,
+      hub_id: hubActual.id,
       categoria: categoriaSubida,
       nombre: f.name,
       tamano: f.size,
       tipo: f.type,
-      blob: f,
+      ruta,
     });
   }
   e.target.value = '';
@@ -794,16 +998,13 @@ $('inputArchivo').onchange = async e => {
   mostrarBadge();
 };
 
-['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion']
-  .forEach(id => $(id).addEventListener('input', programarGuardado));
-
-$('buscador').addEventListener('input', renderLista);
-
-// ================= PWA: service worker =================
-// Solo se registra cuando la app corre como página web (http/https).
-// Al abrir el archivo directamente (file://) la app funciona igual, sin SW.
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+async function descargarArchivo(a) {
+  const { data, error } = await sb.storage.from('archivos').createSignedUrl(a.ruta, 300, { download: a.nombre });
+  if (error || !data?.signedUrl) { mostrarBadgeError('No se pudo descargar. Revisa tu conexión.'); return; }
+  const enlace = document.createElement('a');
+  enlace.href = data.signedUrl;
+  enlace.download = a.nombre;
+  enlace.click();
 }
 
 // ================= Estado de conexión =================
@@ -811,28 +1012,16 @@ function actualizarConexion() {
   const el = $('estadoConexion');
   if (navigator.onLine) {
     el.className = 'online';
-    el.textContent = '● En línea — cambios y IA disponibles';
+    el.textContent = '● En línea';
   } else {
     el.className = 'offline';
-    el.textContent = '● Sin conexión — puedes seguir trabajando';
+    el.textContent = '● Sin conexión — solo consulta';
   }
-  actualizarBotonIA();
 }
 window.addEventListener('online', actualizarConexion);
 window.addEventListener('offline', actualizarConexion);
 
-function actualizarBotonIA() {
-  const btn = $('btnIA');
-  if (!navigator.onLine) {
-    btn.disabled = true;
-    btn.title = 'El asistente de IA solo funciona con internet';
-  } else {
-    btn.disabled = false;
-    btn.title = '';
-  }
-}
-
-// ================= Configuración (clave API) =================
+// ================= Configuración (clave IA) =================
 const CLAVE_STORAGE = 'trepcamp-clave-gemini';
 const obtenerClave = () => localStorage.getItem(CLAVE_STORAGE) || '';
 
@@ -847,11 +1036,11 @@ $('btnGuardarConfig').onclick = () => {
   mostrarBadge();
 };
 
-// ================= Asistente IA para el guión =================
+// ================= Asistente IA =================
 let textoPropuesto = '';
 
 $('btnIA').onclick = () => {
-  if (!eventoActual) return;
+  if (!eventoActual || modoLectura) return;
   if (!obtenerClave()) {
     $('claveAPI').value = '';
     $('modalConfig').classList.add('abierto');
@@ -882,18 +1071,19 @@ async function generarGuion() {
     mostrarErrorIA('No hay conexión a internet. El asistente de IA solo funciona en línea.');
     return;
   }
-  const guionActual = $('guion').value.trim();
+  const guionActualTxt = $('guion').value.trim();
   const instrucciones = $('instruccionesIA').value.trim();
 
   const contexto = [
     `Nombre del evento: ${eventoActual.nombre || '(sin nombre)'}`,
+    `Hub organizador: ${hubActual?.nombre || ''}`,
     eventoActual.fecha ? `Fecha: ${formatearFecha(eventoActual)}` : '',
     eventoActual.lugar ? `Lugar: ${eventoActual.lugar}` : '',
     eventoActual.notas ? `Notas importantes del organizador:\n${eventoActual.notas}` : '',
   ].filter(Boolean).join('\n');
 
-  const pedido = guionActual
-    ? `Este es el guión actual del evento. Proponme una versión mejorada, conservando la información y estructura que ya sirve:\n\n${guionActual}`
+  const pedido = guionActualTxt
+    ? `Este es el guión actual del evento. Proponme una versión mejorada, conservando la información y estructura que ya sirve:\n\n${guionActualTxt}`
     : 'Aún no hay guión. Escribe una propuesta completa de guión para este evento.';
 
   const extra = instrucciones ? `\n\nIndicaciones adicionales del organizador: ${instrucciones}` : '';
@@ -924,7 +1114,7 @@ async function generarGuion() {
       const err = await resp.json().catch(() => null);
       const msg = err?.error?.message || `Error ${resp.status}`;
       if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
-        mostrarErrorIA('La clave API no es válida. Revísala en el botón ⚙️ de la barra lateral (se consigue gratis en aistudio.google.com).');
+        mostrarErrorIA('La clave API no es válida. Revísala en el botón ⚙️ IA de la barra lateral (se consigue gratis en aistudio.google.com).');
       } else if (resp.status === 429) {
         mostrarErrorIA('Se alcanzó el límite gratuito de la IA por ahora. Espera un minuto e inténtalo de nuevo.');
       } else {
@@ -964,12 +1154,17 @@ function mostrarErrorIA(msg) {
   el.style.display = 'block';
 }
 
+// ================= PWA: service worker =================
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
 // ================= Inicio =================
 (async () => {
-  await abrirDB();
-  eventos = await listarEventos();
-  renderLista();
   actualizarConexion();
+  if (SUPABASE_URL.includes('PEGAR')) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) await iniciarSesion();
 })();
 </script>
 </body>

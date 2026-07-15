@@ -1,13 +1,14 @@
 // Service worker de TREP CAMP
 // Estrategia: "red primero" para la página (así se actualiza cuando hay internet)
 // y respaldo en caché para funcionar sin conexión.
-const CACHE = 'trepcamp-v1';
+const CACHE = 'trepcamp-v2';
 const ARCHIVOS = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
 ];
 
 self.addEventListener('install', e => {
@@ -26,9 +27,22 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
+  if (e.request.method !== 'GET') return;
 
-  // Nunca interceptar llamadas a la API de IA u otros dominios
-  if (url.origin !== self.location.origin || e.request.method !== 'GET') return;
+  // Librería de Supabase (CDN): caché primero, es una versión estable
+  if (url.origin === 'https://cdn.jsdelivr.net') {
+    e.respondWith(
+      caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
+        const copia = resp.clone();
+        caches.open(CACHE).then(c => c.put(e.request, copia));
+        return resp;
+      }))
+    );
+    return;
+  }
+
+  // Nunca interceptar llamadas a Supabase (datos) ni a la API de IA
+  if (url.origin !== self.location.origin) return;
 
   e.respondWith(
     // Red primero: si hay internet se descarga la versión más reciente y se guarda en caché
