@@ -672,7 +672,7 @@ async function mostrarHubs() {
   $('buscadorGlobal').value = '';
   $('gridHubs').innerHTML = '<p style="color:var(--muted);">Cargando Hubs…</p>';
 
-  const { data: hubs, error } = await sb.from('hubs').select('id, nombre, eventos(count)').order('nombre');
+  const { data: hubs, error } = await sb.from('hubs').select('id, nombre, eventos!eventos_hub_id_fkey(count)').order('nombre');
   if (error) { $('gridHubs').innerHTML = '<p style="color:var(--danger);">No se pudieron cargar los Hubs.</p>'; return; }
 
   // Eventos de esta semana por hub
@@ -707,7 +707,7 @@ async function buscarGlobal() {
   const q = $('buscadorGlobal').value.trim();
   const cont = $('resultadosBusqueda');
   if (q.length < 2) { cont.style.display = 'none'; return; }
-  const { data } = await sb.from('eventos').select('id, nombre, fecha, hub_id, hubs(nombre)').ilike('nombre', `%${q}%`).limit(30);
+  const { data } = await sb.from('eventos').select('id, nombre, fecha, hub_id, hubs!eventos_hub_id_fkey(nombre)').ilike('nombre', `%${q}%`).limit(30);
   cont.style.display = 'block';
   if (!data || !data.length) { cont.innerHTML = '<p style="color:var(--muted); font-size:13.5px;">Sin resultados.</p>'; return; }
   cont.innerHTML = '';
