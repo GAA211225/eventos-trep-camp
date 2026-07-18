@@ -1,7 +1,7 @@
 // Service worker de TREP CAMP
 // Estrategia: "red primero" para la página (así se actualiza cuando hay internet)
 // y respaldo en caché para funcionar sin conexión.
-const CACHE = 'trepcamp-v2';
+const CACHE = 'trepcamp-v3';
 const ARCHIVOS = [
   './',
   './index.html',

@@ -33,265 +33,165 @@
     overflow: hidden;
   }
 
-  /* ============ PANTALLAS COMPLETAS (login / pendiente / hubs) ============ */
-  .pantalla {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 40;
-    overflow-y: auto;
-  }
+  /* ============ PANTALLAS COMPLETAS ============ */
+  .pantalla { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 40; overflow-y: auto; }
   .pantalla.visible { display: block; }
-  .pantalla-centro {
-    min-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
+  .pantalla-centro { min-height: 100%; display: flex; align-items: center; justify-content: center; padding: 24px; }
   .caja-login {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 32px;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: 0 10px 40px rgba(15,23,42,.08);
+    background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; width: 100%; max-width: 420px; box-shadow: 0 10px 40px rgba(15,23,42,.08);
   }
   .caja-login .logo { text-align: center; margin-bottom: 20px; }
   .caja-login .logo h1 { font-size: 24px; }
   .caja-login .logo h1 span { color: var(--accent); }
   .caja-login .logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
   .caja-login label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin: 14px 0 6px; }
-  .caja-login input {
-    width: 100%;
-    padding: 11px 13px;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    font-size: 14.5px;
-    outline: none;
-  }
+  .caja-login input { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; font-size: 14.5px; outline: none; }
   .caja-login input:focus { border-color: var(--accent); }
   .caja-login .btn { width: 100%; margin-top: 20px; padding: 12px; font-size: 14.5px; }
-  .caja-login .alterna {
-    text-align: center; margin-top: 16px; font-size: 13.5px; color: var(--muted);
-  }
+  .caja-login .alterna { text-align: center; margin-top: 16px; font-size: 13.5px; color: var(--muted); }
   .caja-login .alterna a { color: var(--accent); cursor: pointer; font-weight: 600; text-decoration: none; }
-  .aviso-login {
-    display: none;
-    margin-top: 14px;
-    border-radius: 8px;
-    padding: 11px 13px;
-    font-size: 13px;
-    line-height: 1.5;
-  }
+  .caja-login .olvide { text-align: center; margin-top: 10px; font-size: 12.5px; }
+  .caja-login .olvide a { color: var(--muted); cursor: pointer; text-decoration: underline; }
+  .aviso-login { display: none; margin-top: 14px; border-radius: 8px; padding: 11px 13px; font-size: 13px; line-height: 1.5; }
   .aviso-login.error { background: #fee2e2; color: #991b1b; display: block; }
   .aviso-login.ok { background: #dcfce7; color: #166534; display: block; }
 
-  /* Vista de hubs (asesor) */
-  #vistaHubs .contenido { max-width: 900px; margin: 0 auto; padding: 40px 24px 60px; }
-  #vistaHubs h2 { margin-bottom: 6px; }
-  #vistaHubs .sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
-  .grid-hubs {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 12px;
+  .contenido-ancho { max-width: 960px; margin: 0 auto; padding: 40px 24px 60px; }
+  .barra-superior { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+  .barra-superior h2 { margin-bottom: 4px; }
+  .barra-superior .sub { color: var(--muted); font-size: 14px; }
+  .acciones-barra { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  #buscadorGlobal {
+    width: 100%; padding: 11px 14px; margin-bottom: 18px;
+    border: 1px solid var(--border); border-radius: 10px; font-size: 14.5px; outline: none;
   }
+  #buscadorGlobal:focus { border-color: var(--accent); }
+  #resultadosBusqueda { margin-bottom: 18px; display: none; }
+  #resultadosBusqueda .res {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 8px; cursor: pointer;
+  }
+  #resultadosBusqueda .res:hover { border-color: var(--accent); }
+  #resultadosBusqueda .res .n { font-weight: 600; }
+  #resultadosBusqueda .res .h { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
+
+  .grid-hubs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
   .tarjeta-hub {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
-    cursor: pointer;
-    transition: border-color .12s, transform .12s;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; cursor: pointer; transition: border-color .12s, transform .12s;
   }
   .tarjeta-hub:hover { border-color: var(--accent); transform: translateY(-2px); }
   .tarjeta-hub .nombre { font-weight: 700; font-size: 15px; }
   .tarjeta-hub .datos { color: var(--muted); font-size: 12.5px; margin-top: 5px; }
-  .barra-superior {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 24px; flex-wrap: wrap; gap: 10px;
-  }
+  .tarjeta-hub .datos b { color: var(--accent); }
+
+  /* Tabla admin */
+  .tabla-admin { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .tabla-admin th, .tabla-admin td { padding: 11px 14px; text-align: left; font-size: 13.5px; border-bottom: 1px solid var(--border); }
+  .tabla-admin th { background: #f8fafc; font-size: 12px; text-transform: uppercase; letter-spacing: .4px; color: var(--muted); }
+  .tabla-admin tr:last-child td { border-bottom: none; }
+  .tabla-admin select { padding: 6px 8px; border: 1px solid var(--border); border-radius: 7px; font-size: 13px; }
+  .tabla-admin .btn-mini { padding: 6px 12px; font-size: 12.5px; border-radius: 7px; border: none; background: var(--accent); color: #fff; cursor: pointer; }
+  .tabla-admin .btn-mini:hover { background: #1d4ed8; }
+  .envoltura-tabla { overflow-x: auto; }
+  .chip-rol { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+  .chip-rol.pendiente { background: #fef9c3; color: #854d0e; }
+  .chip-rol.ambassador { background: #dbeafe; color: #1e40af; }
+  .chip-rol.asesor { background: #dcfce7; color: #166534; }
+  .chip-rol.admin { background: #f3e8ff; color: #6b21a8; }
 
   /* ============ SIDEBAR ============ */
-  #sidebar {
-    width: 300px;
-    min-width: 300px;
-    background: var(--sidebar);
-    color: #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
-  #sidebar .brand {
-    padding: 18px 18px 12px;
-    border-bottom: 1px solid rgba(255,255,255,.08);
-  }
+  #sidebar { width: 300px; min-width: 300px; background: var(--sidebar); color: #e2e8f0; display: flex; flex-direction: column; height: 100vh; }
+  #sidebar .brand { padding: 18px 18px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
   #sidebar .brand h1 { font-size: 19px; letter-spacing: .5px; color: #fff; }
   #sidebar .brand h1 span { color: #60a5fa; }
   #sidebar .brand .hub-nombre { font-size: 13px; color: #93c5fd; margin-top: 3px; font-weight: 600; }
   #sidebar .brand .usuario { font-size: 11.5px; color: #94a3b8; margin-top: 2px; }
-  #btnVolverHubs {
-    margin: 12px 16px 0;
-    padding: 8px;
-    background: rgba(255,255,255,.08);
-    color: #cbd5e1;
-    border: none; border-radius: 8px;
-    font-size: 13px; cursor: pointer;
-    display: none;
-  }
+  #btnVolverHubs { margin: 12px 16px 0; padding: 8px; background: rgba(255,255,255,.08); color: #cbd5e1; border: none; border-radius: 8px; font-size: 13px; cursor: pointer; display: none; }
   #btnVolverHubs:hover { background: rgba(255,255,255,.14); }
-  #btnNuevo {
-    margin: 12px 16px 8px;
-    padding: 11px;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-  }
+  #btnNuevo { margin: 12px 16px 8px; padding: 11px; background: var(--accent); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; }
   #btnNuevo:hover { background: #1d4ed8; }
-  #estadoConexion {
-    margin: 0 16px 8px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
-    text-align: center;
-  }
+  #estadoConexion { margin: 0 16px 8px; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; text-align: center; }
   #estadoConexion.online { background: rgba(22,163,74,.18); color: #4ade80; }
   #estadoConexion.offline { background: rgba(220,38,38,.18); color: #f87171; }
-  #buscador {
-    margin: 4px 16px 10px;
-    padding: 9px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.06);
-    color: #fff;
-    font-size: 13px;
-    outline: none;
-  }
+  #buscador { margin: 4px 16px 10px; padding: 9px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); color: #fff; font-size: 13px; outline: none; }
   #buscador::placeholder { color: #7c8aa5; }
   #listaEventos { flex: 1; overflow-y: auto; padding: 4px 10px 10px; }
-  .evento-item {
-    padding: 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-bottom: 4px;
-    border: 1px solid transparent;
-  }
+  .evento-item { padding: 12px; border-radius: 10px; cursor: pointer; margin-bottom: 4px; border: 1px solid transparent; }
   .evento-item:hover { background: var(--sidebar-hover); }
   .evento-item.activo { background: var(--sidebar-hover); border-color: rgba(96,165,250,.45); }
-  .evento-item .nombre {
-    font-size: 14px; font-weight: 600; color: #f1f5f9;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
+  .evento-item .nombre { font-size: 14px; font-weight: 600; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 6px; }
   .evento-item .fecha { font-size: 12px; color: #94a3b8; margin-top: 3px; }
   .vacio-msg { text-align: center; color: #64748b; font-size: 13px; padding: 30px 16px; line-height: 1.6; }
-  #pieSidebar {
-    padding: 10px 16px 14px;
-    border-top: 1px solid rgba(255,255,255,.08);
-    display: flex; gap: 8px;
-  }
-  #pieSidebar button {
-    flex: 1;
-    padding: 8px;
-    background: rgba(255,255,255,.07);
-    color: #cbd5e1;
-    border: none; border-radius: 8px;
-    font-size: 12.5px; cursor: pointer;
-  }
+  #pieSidebar { padding: 10px 16px 14px; border-top: 1px solid rgba(255,255,255,.08); display: flex; gap: 8px; }
+  #pieSidebar button { flex: 1; padding: 8px; background: rgba(255,255,255,.07); color: #cbd5e1; border: none; border-radius: 8px; font-size: 12.5px; cursor: pointer; }
   #pieSidebar button:hover { background: rgba(255,255,255,.14); }
+
+  /* Estado del evento */
+  .estado-evento { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .estado-evento.proximo { background: #dbeafe; color: #1e40af; }
+  .estado-evento.hoy { background: #fed7aa; color: #9a3412; }
+  .estado-evento.finalizado { background: #e2e8f0; color: #475569; }
+  .estado-evento.sinfecha { background: #f1f5f9; color: #94a3b8; }
+  .punto { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .punto.proximo { background: #3b82f6; }
+  .punto.hoy { background: #f97316; }
+  .punto.finalizado { background: #94a3b8; }
+  .punto.sinfecha { background: #cbd5e1; }
 
   /* ============ MAIN ============ */
   #main { flex: 1; height: 100vh; overflow-y: auto; padding: 28px 36px 60px; }
-  #pantallaInicio {
-    height: 80%;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    color: var(--muted); text-align: center;
-  }
+  #pantallaInicio { height: 80%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); text-align: center; }
   #pantallaInicio .icono { font-size: 64px; margin-bottom: 16px; }
   #pantallaInicio h2 { color: var(--text); margin-bottom: 8px; }
 
   #detalle { display: none; max-width: 980px; margin: 0 auto; }
-  #avisoLectura {
-    display: none;
-    background: #fef9c3;
-    border: 1px solid #fde047;
-    color: #854d0e;
-    border-radius: 10px;
-    padding: 10px 16px;
-    font-size: 13.5px;
-    margin-bottom: 16px;
-  }
+  #avisoLectura { display: none; background: #fef9c3; border: 1px solid #fde047; color: #854d0e; border-radius: 10px; padding: 10px 16px; font-size: 13.5px; margin-bottom: 16px; }
+  #bannerColab { display: none; background: #f3e8ff; border: 1px solid #d8b4fe; color: #6b21a8; border-radius: 10px; padding: 10px 16px; font-size: 13.5px; margin-bottom: 16px; }
 
   .cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
-  #tituloEvento {
-    font-size: 26px; font-weight: 700;
-    border: none; background: transparent; color: var(--text);
-    width: 100%; outline: none;
-    border-bottom: 2px solid transparent; padding: 4px 0;
-  }
+  .cabecera-izq { flex: 1; }
+  #tituloEvento { font-size: 26px; font-weight: 700; border: none; background: transparent; color: var(--text); width: 100%; outline: none; border-bottom: 2px solid transparent; padding: 4px 0; }
   #tituloEvento:focus { border-bottom-color: var(--accent); }
-  #btnEliminar {
-    padding: 9px 16px; background: #fee2e2; color: var(--danger);
-    border: none; border-radius: 8px;
-    font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
-  }
+  #btnEliminar { padding: 9px 16px; background: #fee2e2; color: var(--danger); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
   #btnEliminar:hover { background: #fecaca; }
 
-  .tarjeta {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px 22px;
-    margin-bottom: 18px;
-  }
+  .tarjeta { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; margin-bottom: 18px; }
   .tarjeta h3 { font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .tarjeta h3 .emoji { font-size: 18px; }
 
   .fila-fecha { display: flex; gap: 16px; flex-wrap: wrap; }
   .campo { display: flex; flex-direction: column; gap: 6px; }
   .campo label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
-  .campo input {
-    padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px;
-    font-size: 14px; font-family: inherit; color: var(--text); background: #fff; outline: none;
-  }
+  .campo input { padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; color: var(--text); background: #fff; outline: none; }
   .campo input:focus { border-color: var(--accent); }
   input:disabled, textarea:disabled { background: #f8fafc !important; color: #475569; cursor: default; }
 
-  textarea {
-    width: 100%; min-height: 130px;
-    padding: 12px 14px;
-    border: 1px solid var(--border); border-radius: 8px;
-    font-size: 14px; font-family: inherit; line-height: 1.6;
-    color: var(--text); resize: vertical; outline: none;
-  }
+  textarea { width: 100%; min-height: 130px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; line-height: 1.6; color: var(--text); resize: vertical; outline: none; }
   textarea:focus { border-color: var(--accent); }
   #guion { min-height: 260px; }
+
+  /* Colaboración */
+  .toggle-fila { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .toggle-fila input[type=checkbox] { width: 18px; height: 18px; }
+  .toggle-fila label { font-size: 14px; font-weight: 600; }
+  #selectorHubs { display: none; }
+  .hubs-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .hub-chip { padding: 7px 13px; border: 1px solid var(--border); border-radius: 20px; font-size: 13px; cursor: pointer; background: #fff; user-select: none; }
+  .hub-chip.sel { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .hub-chip.bloq { opacity: .5; cursor: default; }
 
   /* ============ ARCHIVOS ============ */
   .categoria-archivos { margin-bottom: 18px; }
   .categoria-archivos:last-child { margin-bottom: 0; }
   .categoria-cabecera { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   .categoria-cabecera .nombre-cat { font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 7px; }
-  .btn-subir {
-    padding: 6px 14px; background: var(--accent-soft); color: var(--accent);
-    border: none; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer;
-  }
+  .btn-subir { padding: 6px 14px; background: var(--accent-soft); color: var(--accent); border: none; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
   .btn-subir:hover { background: #bfdbfe; }
   .lista-archivos { display: flex; flex-direction: column; gap: 6px; }
-  .archivo {
-    display: flex; align-items: center; gap: 10px;
-    padding: 8px 12px;
-    background: #f8fafc;
-    border: 1px solid var(--border); border-radius: 8px;
-    font-size: 13.5px;
-  }
+  .archivo { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; font-size: 13.5px; }
   .archivo .info { flex: 1; overflow: hidden; }
   .archivo .info .fname { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 500; }
   .archivo .info .fsize { font-size: 11.5px; color: var(--muted); }
@@ -299,49 +199,37 @@
   .archivo button:hover { background: #e2e8f0; }
   .sin-archivos { font-size: 12.5px; color: var(--muted); font-style: italic; padding: 4px 2px; }
 
-  .badge-guardado {
-    position: fixed; bottom: 20px; right: 24px;
-    background: #16a34a; color: #fff;
-    padding: 8px 16px; border-radius: 20px;
-    font-size: 13px; font-weight: 600;
-    opacity: 0; transition: opacity .3s; pointer-events: none;
-    z-index: 60;
-  }
+  /* Observaciones */
+  .obs-item { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .obs-item .cab { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .obs-item .autor { font-weight: 600; font-size: 13px; }
+  .obs-item .autor .rol { font-weight: 400; color: var(--muted); font-size: 11.5px; margin-left: 5px; }
+  .obs-item .fecha { font-size: 11.5px; color: var(--muted); }
+  .obs-item .texto { font-size: 13.5px; line-height: 1.55; white-space: pre-wrap; }
+  .obs-item .borrar { border: none; background: transparent; cursor: pointer; color: var(--danger); font-size: 12px; }
+  .obs-form { display: flex; gap: 8px; margin-top: 12px; align-items: flex-start; }
+  .obs-form textarea { min-height: 46px; }
+
+  .badge-guardado { position: fixed; bottom: 20px; right: 24px; background: #16a34a; color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 60; }
   .badge-guardado.visible { opacity: 1; }
 
   /* ============ ASISTENTE IA ============ */
   .cabecera-guion { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .cabecera-guion h3 { margin-bottom: 0; }
-  #btnIA {
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #7c3aed, #2563eb);
-    color: #fff; border: none; border-radius: 8px;
-    font-size: 13px; font-weight: 600; cursor: pointer;
-  }
+  #btnIA { padding: 8px 16px; background: linear-gradient(135deg, #7c3aed, #2563eb); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
   #btnIA:hover { opacity: .9; }
   #btnIA:disabled { opacity: .45; cursor: not-allowed; }
 
   /* ============ MODALES ============ */
-  .modal-fondo {
-    position: fixed; inset: 0;
-    background: rgba(15,23,42,.55);
-    display: none; align-items: center; justify-content: center;
-    z-index: 50; padding: 16px;
-  }
+  .modal-fondo { position: fixed; inset: 0; background: rgba(15,23,42,.55); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
   .modal-fondo.abierto { display: flex; }
-  .modal {
-    background: #fff; border-radius: 14px; padding: 24px;
-    width: 100%; max-width: 720px; max-height: 88vh; overflow-y: auto;
-    box-shadow: 0 20px 50px rgba(0,0,0,.25);
-  }
+  .modal { background: #fff; border-radius: 14px; padding: 24px; width: 100%; max-width: 720px; max-height: 88vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
   .modal h3 { margin-bottom: 6px; font-size: 17px; }
   .modal .sub { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
   .modal textarea { min-height: 80px; }
+  .modal input.campo-txt { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; }
   .modal .acciones { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap; }
-  .btn {
-    padding: 9px 18px; border: none; border-radius: 8px;
-    font-size: 13.5px; font-weight: 600; cursor: pointer;
-  }
+  .btn { padding: 9px 18px; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
   .btn-primario { background: var(--accent); color: #fff; }
   .btn-primario:hover { background: #1d4ed8; }
   .btn-primario:disabled { opacity: .5; cursor: not-allowed; }
@@ -350,44 +238,30 @@
   .btn-verde { background: #16a34a; color: #fff; }
   .btn-verde:hover { background: #15803d; }
 
-  #resultadoIA {
-    display: none; margin-top: 16px;
-    background: #f8fafc; border: 1px solid var(--border); border-radius: 10px;
-    padding: 16px; white-space: pre-wrap;
-    font-size: 14px; line-height: 1.7;
-    max-height: 45vh; overflow-y: auto;
-  }
+  #resultadoIA { display: none; margin-top: 16px; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 16px; white-space: pre-wrap; font-size: 14px; line-height: 1.7; max-height: 45vh; overflow-y: auto; }
   #cargandoIA { display: none; margin-top: 16px; text-align: center; color: var(--muted); font-size: 14px; }
-  .spinner {
-    display: inline-block; width: 18px; height: 18px;
-    border: 3px solid #e2e8f0; border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: girar .8s linear infinite;
-    vertical-align: middle; margin-right: 8px;
-  }
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 3px solid #e2e8f0; border-top-color: var(--accent); border-radius: 50%; animation: girar .8s linear infinite; vertical-align: middle; margin-right: 8px; }
   @keyframes girar { to { transform: rotate(360deg); } }
-  #errorIA {
-    display: none; margin-top: 14px;
-    background: #fee2e2; color: #991b1b;
-    border-radius: 8px; padding: 12px 14px;
-    font-size: 13px; line-height: 1.5;
-  }
-  .campo-clave {
-    width: 100%; padding: 10px 12px;
-    border: 1px solid var(--border); border-radius: 8px;
-    font-size: 14px; font-family: monospace;
-  }
+  #errorIA { display: none; margin-top: 14px; background: #fee2e2; color: #991b1b; border-radius: 8px; padding: 12px 14px; font-size: 13px; line-height: 1.5; }
+  .campo-clave { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: monospace; }
+
+  /* Visor de archivos */
+  #visorContenido { text-align: center; }
+  #visorContenido img { max-width: 100%; max-height: 70vh; border-radius: 8px; }
+  #visorContenido iframe { width: 100%; height: 70vh; border: 1px solid var(--border); border-radius: 8px; }
 
   @media (max-width: 720px) {
     body { flex-direction: column; overflow: auto; }
-    #sidebar { width: 100%; min-width: 0; height: auto; max-height: 48vh; }
+    #sidebar { width: 100%; min-width: 0; height: auto; max-height: 46vh; }
     #main { padding: 18px 14px 60px; height: auto; }
+    .cabecera { flex-direction: column; }
+    .contenido-ancho { padding: 24px 14px 60px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ============ PANTALLA: LOGIN ============ -->
+<!-- ============ LOGIN ============ -->
 <div class="pantalla visible" id="pantallaLogin">
   <div class="pantalla-centro">
     <div class="caja-login">
@@ -405,14 +279,13 @@
       <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
       <div class="aviso-login" id="avisoLogin"></div>
       <button class="btn btn-primario" id="btnEntrar">Entrar</button>
-      <div class="alterna" id="alternaLogin">
-        ¿No tienes cuenta? <a id="linkRegistro">Regístrate</a>
-      </div>
+      <div class="alterna" id="alternaLogin">¿No tienes cuenta? <a id="linkRegistro">Regístrate</a></div>
+      <div class="olvide" id="bloqueOlvide"><a id="linkOlvide">¿Olvidaste tu contraseña?</a></div>
     </div>
   </div>
 </div>
 
-<!-- ============ PANTALLA: CUENTA PENDIENTE ============ -->
+<!-- ============ CUENTA PENDIENTE ============ -->
 <div class="pantalla" id="pantallaPendiente">
   <div class="pantalla-centro">
     <div class="caja-login" style="text-align:center;">
@@ -420,24 +293,51 @@
       <h2 style="margin-bottom:8px;">Cuenta en revisión</h2>
       <p style="color:var(--muted); font-size:14px; line-height:1.6;" id="msgPendiente">
         Tu cuenta se creó correctamente, pero el administrador de TREP CAMP
-        aún no te asigna un rol (ambassador o asesor). Avísale para que te active.
+        aún no te asigna un rol. Avísale para que te active.
       </p>
       <button class="btn btn-secundario" id="btnSalirPendiente" style="margin-top:20px;">Cerrar sesión</button>
     </div>
   </div>
 </div>
 
-<!-- ============ PANTALLA: HUBS (asesores) ============ -->
+<!-- ============ HUBS ============ -->
 <div class="pantalla" id="vistaHubs">
-  <div class="contenido">
+  <div class="contenido-ancho">
     <div class="barra-superior">
       <div>
         <h2>🌎 Hubs de TREP CAMP</h2>
         <p class="sub" id="subHubs">Entra a cualquier Hub para revisar sus eventos y materiales.</p>
       </div>
-      <button class="btn btn-secundario" id="btnSalirHubs">Cerrar sesión</button>
+      <div class="acciones-barra">
+        <button class="btn btn-secundario" id="btnAdmin" style="display:none;">👥 Administrar usuarios</button>
+        <button class="btn btn-secundario" id="btnConfigHubs">⚙️ IA</button>
+        <button class="btn btn-secundario" id="btnSalirHubs">Cerrar sesión</button>
+      </div>
     </div>
+    <input id="buscadorGlobal" type="text" placeholder="🔍 Buscar un evento en todos los Hubs…">
+    <div id="resultadosBusqueda"></div>
     <div class="grid-hubs" id="gridHubs"></div>
+  </div>
+</div>
+
+<!-- ============ ADMIN ============ -->
+<div class="pantalla" id="vistaAdmin">
+  <div class="contenido-ancho">
+    <div class="barra-superior">
+      <div>
+        <h2>👥 Administración de usuarios</h2>
+        <p class="sub">Asigna a cada persona su rol. A los ambassadors, asígnales también su Hub.</p>
+      </div>
+      <button class="btn btn-secundario" id="btnVolverDesdeAdmin">← Volver a los Hubs</button>
+    </div>
+    <div class="envoltura-tabla">
+      <table class="tabla-admin">
+        <thead>
+          <tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Hub (solo ambassador)</th><th></th></tr>
+        </thead>
+        <tbody id="tablaUsuarios"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -468,30 +368,33 @@
 
   <div id="detalle">
     <div id="avisoLectura">👁️ Estás en modo revisión: puedes ver y descargar todo, pero no modificar.</div>
+    <div id="bannerColab"></div>
     <div class="cabecera">
-      <input id="tituloEvento" type="text" placeholder="Nombre del evento">
+      <div class="cabecera-izq">
+        <input id="tituloEvento" type="text" placeholder="Nombre del evento">
+      </div>
       <button id="btnEliminar">🗑 Eliminar</button>
     </div>
 
     <div class="tarjeta">
       <h3><span class="emoji">📅</span> Fecha y hora</h3>
       <div class="fila-fecha">
-        <div class="campo">
-          <label>Día</label>
-          <input type="date" id="fecha">
-        </div>
-        <div class="campo">
-          <label>Hora de inicio</label>
-          <input type="time" id="horaInicio">
-        </div>
-        <div class="campo">
-          <label>Hora de fin</label>
-          <input type="time" id="horaFin">
-        </div>
-        <div class="campo" style="flex:1; min-width:180px;">
-          <label>Lugar</label>
-          <input type="text" id="lugar" placeholder="Lugar del evento (opcional)">
-        </div>
+        <div class="campo"><label>Día</label><input type="date" id="fecha"></div>
+        <div class="campo"><label>Hora de inicio</label><input type="time" id="horaInicio"></div>
+        <div class="campo"><label>Hora de fin</label><input type="time" id="horaFin"></div>
+        <div class="campo" style="flex:1; min-width:180px;"><label>Lugar</label><input type="text" id="lugar" placeholder="Lugar del evento (opcional)"></div>
+      </div>
+    </div>
+
+    <div class="tarjeta" id="tarjetaColab">
+      <h3><span class="emoji">🤝</span> Colaboración entre Hubs</h3>
+      <div class="toggle-fila">
+        <input type="checkbox" id="chkColab">
+        <label for="chkColab">Este evento se organiza en colaboración con otros Hubs</label>
+      </div>
+      <div id="selectorHubs">
+        <p style="font-size:12.5px; color:var(--muted); margin-bottom:2px;">Elige los Hubs que colaboran (podrán ver y editar este evento):</p>
+        <div class="hubs-chips" id="chipsHubs"></div>
       </div>
     </div>
 
@@ -511,6 +414,15 @@
         <button id="btnIA">✨ Asistente IA</button>
       </div>
       <textarea id="guion" placeholder="Escribe aquí el guión del evento: apertura, presentaciones, transiciones, cierre…"></textarea>
+    </div>
+
+    <div class="tarjeta">
+      <h3><span class="emoji">💬</span> Observaciones</h3>
+      <div id="listaObs"></div>
+      <div class="obs-form">
+        <textarea id="txtObs" placeholder="Escribe una observación o comentario…"></textarea>
+        <button class="btn btn-primario" id="btnAgregarObs" style="align-self:stretch;">Enviar</button>
+      </div>
     </div>
   </div>
 </main>
@@ -551,26 +463,41 @@
   </div>
 </div>
 
+<!-- Modal: Visor de archivos -->
+<div class="modal-fondo" id="modalVisor">
+  <div class="modal">
+    <h3 id="visorTitulo" style="margin-bottom:14px;"></h3>
+    <div id="visorContenido"></div>
+    <div class="acciones">
+      <button class="btn btn-secundario" id="btnCerrarVisor">Cerrar</button>
+      <button class="btn btn-primario" id="btnDescargarVisor">⬇️ Descargar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nueva contraseña -->
+<div class="modal-fondo" id="modalPass">
+  <div class="modal" style="max-width:460px;">
+    <h3>🔑 Establecer nueva contraseña</h3>
+    <p class="sub">Escribe tu nueva contraseña para tu cuenta de TREP CAMP.</p>
+    <input type="password" id="nuevaPass" class="campo-txt" placeholder="Nueva contraseña (mín. 6 caracteres)">
+    <div class="aviso-login" id="avisoPass"></div>
+    <div class="acciones">
+      <button class="btn btn-primario" id="btnGuardarPass">Guardar contraseña</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ================================================================
 // CONFIGURACIÓN DE SUPABASE
-// Pegar aquí los datos del proyecto (Supabase → Settings → API)
 // ================================================================
-const SUPABASE_URL = 'PEGAR_AQUI_LA_URL_DEL_PROYECTO';
-const SUPABASE_ANON_KEY = 'PEGAR_AQUI_LA_CLAVE_ANON';
+const SUPABASE_URL = 'https://svwfapftodjlhflrneyp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_aMVTm54B9P3XSuhJf8Lg1A_x4GyKtB2';
 
 const $ = id => document.getElementById(id);
-
-if (SUPABASE_URL.includes('PEGAR')) {
-  document.addEventListener('DOMContentLoaded', () => {
-    const aviso = $('avisoLogin');
-    aviso.className = 'aviso-login error';
-    aviso.textContent = 'La app aún no está conectada a Supabase. Falta configurar SUPABASE_URL y SUPABASE_ANON_KEY en index.html.';
-    $('btnEntrar').disabled = true;
-  });
-}
-
-const sb = supabase.createClient(SUPABASE_URL.includes('PEGAR') ? 'https://placeholder.supabase.co' : SUPABASE_URL, SUPABASE_ANON_KEY);
+const configurado = !SUPABASE_URL.includes('PEGAR');
+const sb = supabase.createClient(configurado ? SUPABASE_URL : 'https://placeholder.supabase.co', SUPABASE_ANON_KEY);
 
 const CATEGORIAS = [
   { id: 'cronograma',   nombre: 'Cronograma',                emoji: '🗓️' },
@@ -580,18 +507,44 @@ const CATEGORIAS = [
 ];
 
 // ================= Estado =================
-let perfil = null;          // { id, nombre, rol, hub_id }
-let hubActual = null;       // { id, nombre }
-let modoLectura = false;    // true para asesores
+let perfil = null;
+let hubActual = null;
+let modoLectura = false;
+let esPropietario = false;
 let eventos = [];
 let eventoActual = null;
 let categoriaSubida = null;
 let timerGuardado = null;
 let modoRegistro = false;
+let todosLosHubs = [];      // [{id, nombre}]
+let colaboradoresSel = new Set();  // hub_ids colaboradores del evento actual
+
+// ================= Utilidades =================
+function escapar(s) {
+  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function estadoDe(ev) {
+  if (!ev.fecha) return { clave: 'sinfecha', texto: 'Sin fecha' };
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const [y,m,d] = ev.fecha.split('-');
+  const f = new Date(y, m-1, d);
+  if (f.getTime() === hoy.getTime()) return { clave: 'hoy', texto: 'Hoy' };
+  if (f > hoy) return { clave: 'proximo', texto: 'Próximo' };
+  return { clave: 'finalizado', texto: 'Finalizado' };
+}
+function formatearFecha(ev) {
+  if (!ev.fecha) return 'Sin fecha';
+  const [y, m, d] = ev.fecha.split('-');
+  const f = new Date(y, m - 1, d);
+  let txt = f.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+  if (ev.hora_inicio) txt += ' · ' + ev.hora_inicio;
+  return txt;
+}
+function nombreHub(id) { return (todosLosHubs.find(h => h.id === id) || {}).nombre || ''; }
 
 // ================= Navegación entre pantallas =================
 function mostrarPantalla(nombre) {
-  ['pantallaLogin', 'pantallaPendiente', 'vistaHubs'].forEach(p =>
+  ['pantallaLogin', 'pantallaPendiente', 'vistaHubs', 'vistaAdmin'].forEach(p =>
     $(p).classList.toggle('visible', p === nombre));
   const app = nombre === 'app';
   $('sidebar').style.display = app ? 'flex' : 'none';
@@ -607,16 +560,23 @@ function alternarRegistro() {
     ? '¿Ya tienes cuenta? <a id="linkRegistro">Inicia sesión</a>'
     : '¿No tienes cuenta? <a id="linkRegistro">Regístrate</a>';
   $('linkRegistro').onclick = alternarRegistro;
+  $('bloqueOlvide').style.display = modoRegistro ? 'none' : 'block';
   ocultarAvisoLogin();
 }
 $('linkRegistro').onclick = alternarRegistro;
 
 function avisoLogin(msg, tipo = 'error') {
-  const el = $('avisoLogin');
-  el.className = 'aviso-login ' + tipo;
-  el.textContent = msg;
+  const el = $('avisoLogin'); el.className = 'aviso-login ' + tipo; el.textContent = msg;
 }
 function ocultarAvisoLogin() { $('avisoLogin').className = 'aviso-login'; }
+
+$('linkOlvide').onclick = async () => {
+  const correo = $('loginCorreo').value.trim();
+  if (!correo) { avisoLogin('Escribe tu correo arriba y vuelve a tocar el enlace.'); return; }
+  const { error } = await sb.auth.resetPasswordForEmail(correo, { redirectTo: location.origin + location.pathname });
+  if (error) { avisoLogin('No se pudo enviar el correo: ' + error.message); return; }
+  avisoLogin('Te enviamos un correo con un enlace para restablecer tu contraseña. Revisa tu bandeja (y spam).', 'ok');
+};
 
 $('btnEntrar').onclick = async () => {
   const correo = $('loginCorreo').value.trim();
@@ -628,24 +588,16 @@ $('btnEntrar').onclick = async () => {
     if (modoRegistro) {
       const nombre = $('regNombre').value.trim();
       if (!nombre) { avisoLogin('Escribe tu nombre.'); return; }
-      const { data, error } = await sb.auth.signUp({
-        email: correo, password: pass,
-        options: { data: { nombre } },
-      });
+      const { data, error } = await sb.auth.signUp({ email: correo, password: pass, options: { data: { nombre } } });
       if (error) { avisoLogin(traducirErrorAuth(error.message)); return; }
-      if (!data.session) {
-        avisoLogin('Cuenta creada. Revisa tu correo y confirma tu dirección para poder entrar.', 'ok');
-        return;
-      }
+      if (!data.session) { avisoLogin('Cuenta creada. Revisa tu correo y confirma tu dirección para poder entrar.', 'ok'); return; }
       await iniciarSesion();
     } else {
       const { error } = await sb.auth.signInWithPassword({ email: correo, password: pass });
       if (error) { avisoLogin(traducirErrorAuth(error.message)); return; }
       await iniciarSesion();
     }
-  } finally {
-    $('btnEntrar').disabled = false;
-  }
+  } finally { $('btnEntrar').disabled = false; }
 };
 $('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnEntrar').click(); });
 
@@ -661,13 +613,25 @@ function traducirErrorAuth(msg) {
 async function cerrarSesion() {
   await sb.auth.signOut();
   perfil = null; hubActual = null; eventos = []; eventoActual = null;
-  $('detalle').style.display = 'none';
-  $('pantallaInicio').style.display = 'flex';
+  $('detalle').style.display = 'none'; $('pantallaInicio').style.display = 'flex';
   mostrarPantalla('pantallaLogin');
 }
 $('btnSalir').onclick = cerrarSesion;
 $('btnSalirPendiente').onclick = cerrarSesion;
 $('btnSalirHubs').onclick = cerrarSesion;
+
+// ================= Recuperación de contraseña =================
+sb.auth.onAuthStateChange((evento) => {
+  if (evento === 'PASSWORD_RECOVERY') $('modalPass').classList.add('abierto');
+});
+$('btnGuardarPass').onclick = async () => {
+  const nueva = $('nuevaPass').value;
+  if (nueva.length < 6) { $('avisoPass').className = 'aviso-login error'; $('avisoPass').textContent = 'Mínimo 6 caracteres.'; return; }
+  const { error } = await sb.auth.updateUser({ password: nueva });
+  if (error) { $('avisoPass').className = 'aviso-login error'; $('avisoPass').textContent = 'No se pudo: ' + error.message; return; }
+  $('modalPass').classList.remove('abierto');
+  await iniciarSesion();
+};
 
 // ================= Arranque según rol =================
 async function iniciarSesion() {
@@ -675,16 +639,16 @@ async function iniciarSesion() {
   if (!user) { mostrarPantalla('pantallaLogin'); return; }
 
   const { data: p, error } = await sb.from('profiles').select('*').eq('id', user.id).single();
-  if (error || !p) {
-    avisoLogin('No se pudo cargar tu perfil. Intenta de nuevo.');
-    mostrarPantalla('pantallaLogin');
-    return;
-  }
+  if (error || !p) { avisoLogin('No se pudo cargar tu perfil. Intenta de nuevo.'); mostrarPantalla('pantallaLogin'); return; }
   perfil = p;
 
   if (perfil.rol === 'pendiente') { mostrarPantalla('pantallaPendiente'); return; }
 
-  if (perfil.rol === 'asesor') {
+  // Cargar la lista de todos los hubs (para nombres y colaboración)
+  const { data: hubs } = await sb.from('hubs').select('id, nombre').order('nombre');
+  todosLosHubs = hubs || [];
+
+  if (perfil.rol === 'asesor' || perfil.rol === 'admin') {
     modoLectura = true;
     await mostrarHubs();
     return;
@@ -697,32 +661,105 @@ async function iniciarSesion() {
     mostrarPantalla('pantallaPendiente');
     return;
   }
-  const { data: hub } = await sb.from('hubs').select('*').eq('id', perfil.hub_id).single();
-  await entrarHub(hub, false);
+  await entrarHub({ id: perfil.hub_id, nombre: nombreHub(perfil.hub_id) }, false);
 }
 
-// ================= Vista de Hubs (asesores) =================
+// ================= Vista de Hubs =================
 async function mostrarHubs() {
   mostrarPantalla('vistaHubs');
+  $('btnAdmin').style.display = perfil.rol === 'admin' ? 'inline-block' : 'none';
+  $('resultadosBusqueda').style.display = 'none';
+  $('buscadorGlobal').value = '';
   $('gridHubs').innerHTML = '<p style="color:var(--muted);">Cargando Hubs…</p>';
-  const { data: hubs, error } = await sb
-    .from('hubs')
-    .select('id, nombre, eventos(count)')
-    .order('nombre');
-  if (error) {
-    $('gridHubs').innerHTML = '<p style="color:var(--danger);">No se pudieron cargar los Hubs. Revisa tu conexión.</p>';
-    return;
-  }
-  $('subHubs').textContent = `Hola, ${perfil.nombre || 'asesor'}. Entra a cualquier Hub para revisar sus eventos y materiales.`;
+
+  const { data: hubs, error } = await sb.from('hubs').select('id, nombre, eventos(count)').order('nombre');
+  if (error) { $('gridHubs').innerHTML = '<p style="color:var(--danger);">No se pudieron cargar los Hubs.</p>'; return; }
+
+  // Eventos de esta semana por hub
+  const lunes = new Date(); lunes.setHours(0,0,0,0); lunes.setDate(lunes.getDate() - ((lunes.getDay()+6)%7));
+  const domingo = new Date(lunes); domingo.setDate(domingo.getDate() + 6);
+  const iso = d => d.toISOString().slice(0,10);
+  const { data: sem } = await sb.from('eventos').select('hub_id').gte('fecha', iso(lunes)).lte('fecha', iso(domingo));
+  const porHub = {};
+  (sem || []).forEach(e => { porHub[e.hub_id] = (porHub[e.hub_id]||0) + 1; });
+
+  $('subHubs').textContent = `Hola, ${perfil.nombre || 'bienvenido'}. Entra a cualquier Hub para revisar sus eventos y materiales.`;
   $('gridHubs').innerHTML = '';
   for (const h of hubs) {
-    const n = h.eventos?.[0]?.count ?? 0;
+    const total = h.eventos?.[0]?.count ?? 0;
+    const estaSem = porHub[h.id] || 0;
     const div = document.createElement('div');
     div.className = 'tarjeta-hub';
     div.innerHTML = `<div class="nombre">📍 ${escapar(h.nombre)}</div>
-                     <div class="datos">${n} evento${n === 1 ? '' : 's'}</div>`;
+                     <div class="datos">${total} evento${total===1?'':'s'}${estaSem ? ` · <b>${estaSem} esta semana</b>` : ''}</div>`;
     div.onclick = () => entrarHub({ id: h.id, nombre: h.nombre }, true);
     $('gridHubs').appendChild(div);
+  }
+}
+
+// ---- Buscador global (asesor/admin) ----
+let timerBusca = null;
+$('buscadorGlobal').addEventListener('input', () => {
+  clearTimeout(timerBusca);
+  timerBusca = setTimeout(buscarGlobal, 300);
+});
+async function buscarGlobal() {
+  const q = $('buscadorGlobal').value.trim();
+  const cont = $('resultadosBusqueda');
+  if (q.length < 2) { cont.style.display = 'none'; return; }
+  const { data } = await sb.from('eventos').select('id, nombre, fecha, hub_id, hubs(nombre)').ilike('nombre', `%${q}%`).limit(30);
+  cont.style.display = 'block';
+  if (!data || !data.length) { cont.innerHTML = '<p style="color:var(--muted); font-size:13.5px;">Sin resultados.</p>'; return; }
+  cont.innerHTML = '';
+  for (const e of data) {
+    const div = document.createElement('div');
+    div.className = 'res';
+    const est = estadoDe(e);
+    div.innerHTML = `<div class="n">${escapar(e.nombre) || '(Sin nombre)'}</div>
+                     <div class="h">📍 ${escapar(e.hubs?.nombre || '')} · ${formatearFecha(e)} · <span class="estado-evento ${est.clave}">${est.texto}</span></div>`;
+    div.onclick = async () => { await entrarHub({ id: e.hub_id, nombre: e.hubs?.nombre || nombreHub(e.hub_id) }, true); abrirEvento(e.id); };
+    cont.appendChild(div);
+  }
+}
+
+$('btnConfigHubs').onclick = () => { $('claveAPI').value = obtenerClave(); $('modalConfig').classList.add('abierto'); };
+
+// ================= Panel de administración =================
+$('btnAdmin').onclick = mostrarAdmin;
+$('btnVolverDesdeAdmin').onclick = mostrarHubs;
+
+async function mostrarAdmin() {
+  mostrarPantalla('vistaAdmin');
+  const tbody = $('tablaUsuarios');
+  tbody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);">Cargando…</td></tr>';
+  const { data: usuarios, error } = await sb.from('profiles').select('*').order('rol');
+  if (error) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--danger);">No se pudieron cargar los usuarios.</td></tr>'; return; }
+  tbody.innerHTML = '';
+  for (const u of usuarios) {
+    const tr = document.createElement('tr');
+    const opcHubs = todosLosHubs.map(h => `<option value="${h.id}" ${u.hub_id===h.id?'selected':''}>${escapar(h.nombre)}</option>`).join('');
+    tr.innerHTML = `
+      <td>${escapar(u.nombre) || '—'} <span class="chip-rol ${u.rol}">${u.rol}</span></td>
+      <td>${escapar(u.correo)}</td>
+      <td>
+        <select data-campo="rol">
+          <option value="pendiente" ${u.rol==='pendiente'?'selected':''}>pendiente</option>
+          <option value="ambassador" ${u.rol==='ambassador'?'selected':''}>ambassador</option>
+          <option value="asesor" ${u.rol==='asesor'?'selected':''}>asesor</option>
+          <option value="admin" ${u.rol==='admin'?'selected':''}>admin</option>
+        </select>
+      </td>
+      <td><select data-campo="hub"><option value="">—</option>${opcHubs}</select></td>
+      <td><button class="btn-mini">Guardar</button></td>`;
+    tr.querySelector('.btn-mini').onclick = async () => {
+      const rol = tr.querySelector('[data-campo=rol]').value;
+      const hub = tr.querySelector('[data-campo=hub]').value || null;
+      const { error } = await sb.from('profiles').update({ rol, hub_id: rol === 'ambassador' ? hub : null }).eq('id', u.id);
+      if (error) { mostrarBadgeError('No se pudo guardar'); return; }
+      mostrarBadge('✓ Usuario actualizado');
+      mostrarAdmin();
+    };
+    tbody.appendChild(tr);
   }
 }
 
@@ -735,14 +772,12 @@ async function entrarHub(hub, lectura) {
   mostrarPantalla('app');
   $('hubNombre').textContent = '📍 Hub ' + (hub?.nombre || '');
   $('usuarioInfo').textContent = `${perfil.nombre || perfil.correo} · ${perfil.rol}`;
-  $('btnVolverHubs').style.display = perfil.rol === 'asesor' ? 'block' : 'none';
+  $('btnVolverHubs').style.display = (perfil.rol === 'asesor' || perfil.rol === 'admin') ? 'block' : 'none';
   $('btnNuevo').style.display = modoLectura ? 'none' : 'block';
   $('btnConfig').style.display = modoLectura ? 'none' : 'block';
   $('detalle').style.display = 'none';
   $('pantallaInicio').style.display = 'flex';
-  $('msgInicio').textContent = modoLectura
-    ? 'Selecciona un evento de la lista para revisarlo.'
-    : 'Crea un evento nuevo o selecciona uno de la lista.';
+  $('msgInicio').textContent = modoLectura ? 'Selecciona un evento de la lista para revisarlo.' : 'Crea un evento nuevo o selecciona uno de la lista.';
 
   await cargarEventos();
 }
@@ -750,29 +785,15 @@ $('btnVolverHubs').onclick = mostrarHubs;
 
 // ================= Eventos (nube) =================
 async function cargarEventos() {
-  const { data, error } = await sb
-    .from('eventos')
-    .select('*')
-    .eq('hub_id', hubActual.id)
-    .order('fecha', { ascending: false, nullsFirst: false });
+  const { data, error } = await sb.rpc('eventos_de_hub', { p_hub: hubActual.id });
   if (error) {
-    // Sin conexión: usar la última copia guardada en este dispositivo (solo lectura)
     const cache = localStorage.getItem('cache-eventos-' + hubActual.id);
     eventos = cache ? JSON.parse(cache) : [];
   } else {
-    eventos = data;
-    localStorage.setItem('cache-eventos-' + hubActual.id, JSON.stringify(data));
+    eventos = data || [];
+    localStorage.setItem('cache-eventos-' + hubActual.id, JSON.stringify(eventos));
   }
   renderLista();
-}
-
-function formatearFecha(ev) {
-  if (!ev.fecha) return 'Sin fecha';
-  const [y, m, d] = ev.fecha.split('-');
-  const f = new Date(y, m - 1, d);
-  let txt = f.toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
-  if (ev.hora_inicio) txt += ' · ' + ev.hora_inicio;
-  return txt;
 }
 
 function renderLista() {
@@ -786,23 +807,23 @@ function renderLista() {
     return;
   }
   for (const ev of visibles) {
+    const est = estadoDe(ev);
+    const colab = ev.hub_id !== hubActual.id;  // este hub colabora, no organiza
     const div = document.createElement('div');
     div.className = 'evento-item' + (eventoActual && ev.id === eventoActual.id ? ' activo' : '');
     div.innerHTML = `
-      <div class="nombre">${escapar(ev.nombre) || '(Sin nombre)'}</div>
-      <div class="fecha">📅 ${formatearFecha(ev)}</div>`;
+      <div class="nombre"><span class="punto ${est.clave}"></span>${escapar(ev.nombre) || '(Sin nombre)'}${colab ? ' 🤝' : ''}</div>
+      <div class="fecha">📅 ${formatearFecha(ev)} · <span class="estado-evento ${est.clave}">${est.texto}</span></div>`;
     div.onclick = () => abrirEvento(ev.id);
     cont.appendChild(div);
   }
 }
 
-function escapar(s) {
-  return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
 async function abrirEvento(id) {
   eventoActual = eventos.find(e => e.id === id);
   if (!eventoActual) return;
+  esPropietario = !modoLectura && eventoActual.hub_id === perfil.hub_id;
+
   $('pantallaInicio').style.display = 'none';
   $('detalle').style.display = 'block';
 
@@ -814,90 +835,134 @@ async function abrirEvento(id) {
   $('notas').value      = eventoActual.notas || '';
   $('guion').value      = eventoActual.guion || '';
 
-  // Modo lectura: bloquear todo
-  ['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion']
-    .forEach(cid => $(cid).disabled = modoLectura);
-  $('btnEliminar').style.display = modoLectura ? 'none' : 'block';
+  ['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion'].forEach(cid => $(cid).disabled = modoLectura);
+  $('btnEliminar').style.display = esPropietario ? 'block' : 'none';
   $('btnIA').style.display = modoLectura ? 'none' : 'block';
   $('avisoLectura').style.display = modoLectura ? 'block' : 'none';
 
+  // Banner de colaboración
+  await cargarColaboradores();
+
   renderLista();
   await renderArchivos();
+  await renderObservaciones();
 }
 
 $('btnNuevo').onclick = async () => {
   if (modoLectura) return;
-  const { data, error } = await sb
-    .from('eventos')
-    .insert({ hub_id: hubActual.id, creado_por: perfil.id })
-    .select()
-    .single();
-  if (error) { mostrarBadgeError('No se pudo crear el evento. Revisa tu conexión.'); return; }
+  const { data, error } = await sb.from('eventos').insert({ hub_id: hubActual.id, creado_por: perfil.id }).select().single();
+  if (error) { mostrarBadgeError('No se pudo crear el evento.'); return; }
   eventos.unshift(data);
   await abrirEvento(data.id);
   $('tituloEvento').focus();
 };
 
 $('btnEliminar').onclick = async () => {
-  if (!eventoActual || modoLectura) return;
+  if (!eventoActual || !esPropietario) return;
   const nombre = eventoActual.nombre || '(sin nombre)';
   if (!confirm(`¿Eliminar el evento "${nombre}" con todos sus archivos, notas y guión?\nEsta acción no se puede deshacer.`)) return;
-
-  // Borrar archivos del almacenamiento primero
   const { data: archivos } = await sb.from('archivos').select('ruta').eq('evento_id', eventoActual.id);
-  if (archivos?.length) {
-    await sb.storage.from('archivos').remove(archivos.map(a => a.ruta));
-  }
+  if (archivos?.length) await sb.storage.from('archivos').remove(archivos.map(a => a.ruta));
   const { error } = await sb.from('eventos').delete().eq('id', eventoActual.id);
-  if (error) { mostrarBadgeError('No se pudo eliminar. Revisa tu conexión.'); return; }
-
+  if (error) { mostrarBadgeError('No se pudo eliminar.'); return; }
   eventos = eventos.filter(e => e.id !== eventoActual.id);
   eventoActual = null;
-  $('detalle').style.display = 'none';
-  $('pantallaInicio').style.display = 'flex';
+  $('detalle').style.display = 'none'; $('pantallaInicio').style.display = 'flex';
   renderLista();
 };
+
+// ================= Colaboración entre Hubs =================
+async function cargarColaboradores() {
+  colaboradoresSel = new Set();
+  const { data } = await sb.from('evento_colaboradores').select('hub_id').eq('evento_id', eventoActual.id);
+  (data || []).forEach(c => colaboradoresSel.add(c.hub_id));
+
+  // Solo el ambassador organizador ve el editor de colaboración
+  $('tarjetaColab').style.display = esPropietario ? 'block' : 'none';
+  $('chkColab').checked = colaboradoresSel.size > 0;
+  $('selectorHubs').style.display = colaboradoresSel.size > 0 ? 'block' : 'none';
+  renderChipsHubs();
+
+  // Banner informativo (para todos)
+  const banner = $('bannerColab');
+  if (colaboradoresSel.size > 0) {
+    const nombres = [...colaboradoresSel].map(nombreHub).filter(Boolean).join(', ');
+    banner.style.display = 'block';
+    banner.innerHTML = `🤝 <b>Colaboración entre Hubs.</b> Organiza: ${escapar(nombreHub(eventoActual.hub_id))}. Colaboran: ${escapar(nombres)}.`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+$('chkColab').onchange = async () => {
+  $('selectorHubs').style.display = $('chkColab').checked ? 'block' : 'none';
+  if (!$('chkColab').checked && colaboradoresSel.size > 0) {
+    // Quitar todos los colaboradores
+    await sb.from('evento_colaboradores').delete().eq('evento_id', eventoActual.id);
+    colaboradoresSel.clear();
+    await sb.from('eventos').update({ es_colaboracion: false }).eq('id', eventoActual.id);
+    renderChipsHubs(); mostrarBadge();
+  }
+  renderChipsHubs();
+};
+
+function renderChipsHubs() {
+  const cont = $('chipsHubs');
+  cont.innerHTML = '';
+  for (const h of todosLosHubs) {
+    if (h.id === eventoActual.hub_id) continue; // el organizador no se lista
+    const chip = document.createElement('div');
+    chip.className = 'hub-chip' + (colaboradoresSel.has(h.id) ? ' sel' : '');
+    chip.textContent = h.nombre;
+    chip.onclick = () => alternarColaborador(h.id);
+    cont.appendChild(chip);
+  }
+}
+
+async function alternarColaborador(hubId) {
+  if (colaboradoresSel.has(hubId)) {
+    colaboradoresSel.delete(hubId);
+    await sb.from('evento_colaboradores').delete().eq('evento_id', eventoActual.id).eq('hub_id', hubId);
+  } else {
+    colaboradoresSel.add(hubId);
+    await sb.from('evento_colaboradores').insert({ evento_id: eventoActual.id, hub_id: hubId });
+  }
+  await sb.from('eventos').update({ es_colaboracion: colaboradoresSel.size > 0 }).eq('id', eventoActual.id);
+  renderChipsHubs();
+  mostrarBadge();
+}
 
 // ================= Guardado automático =================
 function programarGuardado() {
   if (!eventoActual || modoLectura) return;
-  eventoActual.nombre      = $('tituloEvento').value;
-  eventoActual.fecha       = $('fecha').value || null;
+  eventoActual.nombre = $('tituloEvento').value;
+  eventoActual.fecha = $('fecha').value || null;
   eventoActual.hora_inicio = $('horaInicio').value;
-  eventoActual.hora_fin    = $('horaFin').value;
-  eventoActual.lugar       = $('lugar').value;
-  eventoActual.notas       = $('notas').value;
-  eventoActual.guion       = $('guion').value;
+  eventoActual.hora_fin = $('horaFin').value;
+  eventoActual.lugar = $('lugar').value;
+  eventoActual.notas = $('notas').value;
+  eventoActual.guion = $('guion').value;
 
   clearTimeout(timerGuardado);
   timerGuardado = setTimeout(async () => {
     const { error } = await sb.from('eventos').update({
-      nombre: eventoActual.nombre,
-      fecha: eventoActual.fecha,
-      hora_inicio: eventoActual.hora_inicio,
-      hora_fin: eventoActual.hora_fin,
-      lugar: eventoActual.lugar,
-      notas: eventoActual.notas,
-      guion: eventoActual.guion,
+      nombre: eventoActual.nombre, fecha: eventoActual.fecha,
+      hora_inicio: eventoActual.hora_inicio, hora_fin: eventoActual.hora_fin,
+      lugar: eventoActual.lugar, notas: eventoActual.notas, guion: eventoActual.guion,
       actualizado_en: new Date().toISOString(),
     }).eq('id', eventoActual.id);
     if (error) { mostrarBadgeError('Sin conexión: el cambio no se guardó'); return; }
     localStorage.setItem('cache-eventos-' + hubActual.id, JSON.stringify(eventos));
-    renderLista();
-    mostrarBadge();
+    renderLista(); mostrarBadge();
   }, 700);
 }
-
-['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion']
-  .forEach(id => $(id).addEventListener('input', programarGuardado));
+['tituloEvento','fecha','horaInicio','horaFin','lugar','notas','guion'].forEach(id => $(id).addEventListener('input', programarGuardado));
 $('buscador').addEventListener('input', renderLista);
 
 let timerBadge = null;
 function mostrarBadge(texto = '✓ Guardado', color = '#16a34a') {
   const badge = $('badgeGuardado');
-  badge.textContent = texto;
-  badge.style.background = color;
-  badge.classList.add('visible');
+  badge.textContent = texto; badge.style.background = color; badge.classList.add('visible');
   clearTimeout(timerBadge);
   timerBadge = setTimeout(() => badge.classList.remove('visible'), 2200);
 }
@@ -912,47 +977,31 @@ async function renderArchivos() {
     archivos = data || [];
   }
   zona.innerHTML = '';
-
   for (const cat of CATEGORIAS) {
     const deCat = archivos.filter(a => a.categoria === cat.id);
-    const div = document.createElement('div');
-    div.className = 'categoria-archivos';
-
-    const cab = document.createElement('div');
-    cab.className = 'categoria-cabecera';
+    const div = document.createElement('div'); div.className = 'categoria-archivos';
+    const cab = document.createElement('div'); cab.className = 'categoria-cabecera';
     cab.innerHTML = `<span class="nombre-cat">${cat.emoji} ${cat.nombre}</span>`;
     if (!modoLectura) {
-      const btn = document.createElement('button');
-      btn.className = 'btn-subir';
-      btn.textContent = '⬆ Subir archivo';
+      const btn = document.createElement('button'); btn.className = 'btn-subir'; btn.textContent = '⬆ Subir archivo';
       btn.onclick = () => { categoriaSubida = cat.id; $('inputArchivo').click(); };
       cab.appendChild(btn);
     }
     div.appendChild(cab);
-
-    const lista = document.createElement('div');
-    lista.className = 'lista-archivos';
-    if (!deCat.length) {
-      lista.innerHTML = '<div class="sin-archivos">Sin archivos todavía</div>';
-    } else {
+    const lista = document.createElement('div'); lista.className = 'lista-archivos';
+    if (!deCat.length) { lista.innerHTML = '<div class="sin-archivos">Sin archivos todavía</div>'; }
+    else {
       for (const a of deCat) {
-        const fila = document.createElement('div');
-        fila.className = 'archivo';
-        fila.innerHTML = `
-          <span>📄</span>
-          <div class="info">
-            <div class="fname">${escapar(a.nombre)}</div>
-            <div class="fsize">${tamanoLegible(a.tamano)}</div>
-          </div>`;
-        const bDesc = document.createElement('button');
-        bDesc.title = 'Descargar / abrir';
-        bDesc.textContent = '⬇️';
-        bDesc.onclick = () => descargarArchivo(a);
-        fila.appendChild(bDesc);
+        const fila = document.createElement('div'); fila.className = 'archivo';
+        fila.innerHTML = `<span>📄</span><div class="info"><div class="fname">${escapar(a.nombre)}</div><div class="fsize">${tamanoLegible(a.tamano)}</div></div>`;
+        if (esPrevisualizonable(a)) {
+          const bVer = document.createElement('button'); bVer.title = 'Ver'; bVer.textContent = '👁️';
+          bVer.onclick = () => verArchivo(a); fila.appendChild(bVer);
+        }
+        const bDesc = document.createElement('button'); bDesc.title = 'Descargar'; bDesc.textContent = '⬇️';
+        bDesc.onclick = () => descargarArchivo(a); fila.appendChild(bDesc);
         if (!modoLectura) {
-          const bDel = document.createElement('button');
-          bDel.title = 'Eliminar archivo';
-          bDel.textContent = '🗑️';
+          const bDel = document.createElement('button'); bDel.title = 'Eliminar'; bDel.textContent = '🗑️';
           bDel.onclick = async () => {
             if (!confirm(`¿Eliminar el archivo "${a.nombre}"?`)) return;
             await sb.storage.from('archivos').remove([a.ruta]);
@@ -964,59 +1013,96 @@ async function renderArchivos() {
         lista.appendChild(fila);
       }
     }
-    div.appendChild(lista);
-    zona.appendChild(div);
+    div.appendChild(lista); zona.appendChild(div);
   }
 }
-
 function tamanoLegible(b) {
   if (b == null) return '';
   if (b < 1024) return b + ' B';
   if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
   return (b / 1048576).toFixed(1) + ' MB';
 }
+function esPrevisualizonable(a) {
+  const t = a.tipo || '';
+  return t.startsWith('image/') || t === 'application/pdf';
+}
 
 $('inputArchivo').onchange = async e => {
   if (!eventoActual || !categoriaSubida || modoLectura) return;
   mostrarBadge('⬆ Subiendo…', '#2563eb');
   for (const f of e.target.files) {
-    const ruta = `${hubActual.id}/${eventoActual.id}/${crypto.randomUUID()}-${f.name.replace(/[^\w.\-áéíóúñÁÉÍÓÚÑ ]/g, '_')}`;
+    const ruta = `${eventoActual.id}/${crypto.randomUUID()}-${f.name.replace(/[^\w.\-áéíóúñÁÉÍÓÚÑ ]/g, '_')}`;
     const { error: errSubida } = await sb.storage.from('archivos').upload(ruta, f);
     if (errSubida) { mostrarBadgeError('No se pudo subir ' + f.name); continue; }
-    await sb.from('archivos').insert({
-      evento_id: eventoActual.id,
-      hub_id: hubActual.id,
-      categoria: categoriaSubida,
-      nombre: f.name,
-      tamano: f.size,
-      tipo: f.type,
-      ruta,
-    });
+    await sb.from('archivos').insert({ evento_id: eventoActual.id, hub_id: eventoActual.hub_id, categoria: categoriaSubida, nombre: f.name, tamano: f.size, tipo: f.type, ruta });
   }
   e.target.value = '';
-  await renderArchivos();
-  mostrarBadge();
+  await renderArchivos(); mostrarBadge();
 };
 
-async function descargarArchivo(a) {
-  const { data, error } = await sb.storage.from('archivos').createSignedUrl(a.ruta, 300, { download: a.nombre });
-  if (error || !data?.signedUrl) { mostrarBadgeError('No se pudo descargar. Revisa tu conexión.'); return; }
-  const enlace = document.createElement('a');
-  enlace.href = data.signedUrl;
-  enlace.download = a.nombre;
-  enlace.click();
+async function urlFirmada(a, descargar) {
+  const opts = descargar ? { download: a.nombre } : {};
+  const { data, error } = await sb.storage.from('archivos').createSignedUrl(a.ruta, 300, opts);
+  if (error || !data?.signedUrl) { mostrarBadgeError('No se pudo abrir. Revisa tu conexión.'); return null; }
+  return data.signedUrl;
 }
+async function descargarArchivo(a) {
+  const url = await urlFirmada(a, true);
+  if (!url) return;
+  const enlace = document.createElement('a'); enlace.href = url; enlace.download = a.nombre; enlace.click();
+}
+let archivoVisor = null;
+async function verArchivo(a) {
+  const url = await urlFirmada(a, false);
+  if (!url) return;
+  archivoVisor = a;
+  $('visorTitulo').textContent = a.nombre;
+  const cont = $('visorContenido');
+  if ((a.tipo || '').startsWith('image/')) cont.innerHTML = `<img src="${url}" alt="${escapar(a.nombre)}">`;
+  else cont.innerHTML = `<iframe src="${url}"></iframe>`;
+  $('modalVisor').classList.add('abierto');
+}
+$('btnCerrarVisor').onclick = () => { $('modalVisor').classList.remove('abierto'); $('visorContenido').innerHTML = ''; };
+$('btnDescargarVisor').onclick = () => { if (archivoVisor) descargarArchivo(archivoVisor); };
+
+// ================= Observaciones =================
+async function renderObservaciones() {
+  const cont = $('listaObs');
+  const { data } = await sb.from('observaciones').select('*').eq('evento_id', eventoActual.id).order('creado_en');
+  cont.innerHTML = '';
+  if (!data || !data.length) { cont.innerHTML = '<div class="sin-archivos">Aún no hay observaciones.</div>'; return; }
+  for (const o of data) {
+    const div = document.createElement('div'); div.className = 'obs-item';
+    const fecha = new Date(o.creado_en).toLocaleString('es-MX', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    const puedeBorrar = o.autor_id === perfil.id || perfil.rol === 'admin';
+    div.innerHTML = `
+      <div class="cab">
+        <span class="autor">${escapar(o.autor_nombre) || 'Anónimo'}<span class="rol">${escapar(o.autor_rol)}</span></span>
+        <span class="fecha">${fecha}${puedeBorrar ? ' · <button class="borrar">eliminar</button>' : ''}</span>
+      </div>
+      <div class="texto">${escapar(o.texto)}</div>`;
+    if (puedeBorrar) div.querySelector('.borrar').onclick = async () => {
+      await sb.from('observaciones').delete().eq('id', o.id); renderObservaciones();
+    };
+    cont.appendChild(div);
+  }
+}
+$('btnAgregarObs').onclick = async () => {
+  const texto = $('txtObs').value.trim();
+  if (!texto || !eventoActual) return;
+  const { error } = await sb.from('observaciones').insert({
+    evento_id: eventoActual.id, autor_id: perfil.id,
+    autor_nombre: perfil.nombre || perfil.correo, autor_rol: perfil.rol, texto,
+  });
+  if (error) { mostrarBadgeError('No se pudo enviar la observación'); return; }
+  $('txtObs').value = ''; renderObservaciones(); mostrarBadge('✓ Observación enviada');
+};
 
 // ================= Estado de conexión =================
 function actualizarConexion() {
   const el = $('estadoConexion');
-  if (navigator.onLine) {
-    el.className = 'online';
-    el.textContent = '● En línea';
-  } else {
-    el.className = 'offline';
-    el.textContent = '● Sin conexión — solo consulta';
-  }
+  if (navigator.onLine) { el.className = 'online'; el.textContent = '● En línea'; }
+  else { el.className = 'offline'; el.textContent = '● Sin conexión — solo consulta'; }
 }
 window.addEventListener('online', actualizarConexion);
 window.addEventListener('offline', actualizarConexion);
@@ -1024,137 +1110,79 @@ window.addEventListener('offline', actualizarConexion);
 // ================= Configuración (clave IA) =================
 const CLAVE_STORAGE = 'trepcamp-clave-gemini';
 const obtenerClave = () => localStorage.getItem(CLAVE_STORAGE) || '';
-
-$('btnConfig').onclick = () => {
-  $('claveAPI').value = obtenerClave();
-  $('modalConfig').classList.add('abierto');
-};
+$('btnConfig').onclick = () => { $('claveAPI').value = obtenerClave(); $('modalConfig').classList.add('abierto'); };
 $('btnCerrarConfig').onclick = () => $('modalConfig').classList.remove('abierto');
-$('btnGuardarConfig').onclick = () => {
-  localStorage.setItem(CLAVE_STORAGE, $('claveAPI').value.trim());
-  $('modalConfig').classList.remove('abierto');
-  mostrarBadge();
-};
+$('btnGuardarConfig').onclick = () => { localStorage.setItem(CLAVE_STORAGE, $('claveAPI').value.trim()); $('modalConfig').classList.remove('abierto'); mostrarBadge(); };
 
 // ================= Asistente IA =================
 let textoPropuesto = '';
-
 $('btnIA').onclick = () => {
   if (!eventoActual || modoLectura) return;
-  if (!obtenerClave()) {
-    $('claveAPI').value = '';
-    $('modalConfig').classList.add('abierto');
-    return;
-  }
+  if (!obtenerClave()) { $('claveAPI').value = ''; $('modalConfig').classList.add('abierto'); return; }
   textoPropuesto = '';
-  $('resultadoIA').style.display = 'none';
-  $('errorIA').style.display = 'none';
-  $('btnAceptarIA').style.display = 'none';
-  $('btnRegenerarIA').style.display = 'none';
-  $('btnGenerarIA').style.display = '';
-  $('modalIA').classList.add('abierto');
+  $('resultadoIA').style.display = 'none'; $('errorIA').style.display = 'none';
+  $('btnAceptarIA').style.display = 'none'; $('btnRegenerarIA').style.display = 'none';
+  $('btnGenerarIA').style.display = ''; $('modalIA').classList.add('abierto');
 };
-
 $('btnCerrarIA').onclick = () => $('modalIA').classList.remove('abierto');
 $('btnGenerarIA').onclick = generarGuion;
 $('btnRegenerarIA').onclick = generarGuion;
-
 $('btnAceptarIA').onclick = () => {
   if (!eventoActual || !textoPropuesto) return;
-  $('guion').value = textoPropuesto;
-  programarGuardado();
-  $('modalIA').classList.remove('abierto');
+  $('guion').value = textoPropuesto; programarGuardado(); $('modalIA').classList.remove('abierto');
 };
 
 async function generarGuion() {
-  if (!navigator.onLine) {
-    mostrarErrorIA('No hay conexión a internet. El asistente de IA solo funciona en línea.');
-    return;
-  }
+  if (!navigator.onLine) { mostrarErrorIA('No hay conexión a internet. El asistente de IA solo funciona en línea.'); return; }
   const guionActualTxt = $('guion').value.trim();
   const instrucciones = $('instruccionesIA').value.trim();
-
   const contexto = [
     `Nombre del evento: ${eventoActual.nombre || '(sin nombre)'}`,
-    `Hub organizador: ${hubActual?.nombre || ''}`,
+    `Hub organizador: ${nombreHub(eventoActual.hub_id)}`,
+    colaboradoresSel.size ? `En colaboración con: ${[...colaboradoresSel].map(nombreHub).join(', ')}` : '',
     eventoActual.fecha ? `Fecha: ${formatearFecha(eventoActual)}` : '',
     eventoActual.lugar ? `Lugar: ${eventoActual.lugar}` : '',
     eventoActual.notas ? `Notas importantes del organizador:\n${eventoActual.notas}` : '',
   ].filter(Boolean).join('\n');
-
   const pedido = guionActualTxt
     ? `Este es el guión actual del evento. Proponme una versión mejorada, conservando la información y estructura que ya sirve:\n\n${guionActualTxt}`
     : 'Aún no hay guión. Escribe una propuesta completa de guión para este evento.';
-
   const extra = instrucciones ? `\n\nIndicaciones adicionales del organizador: ${instrucciones}` : '';
 
-  $('cargandoIA').style.display = 'block';
-  $('errorIA').style.display = 'none';
-  $('resultadoIA').style.display = 'none';
-  $('btnGenerarIA').disabled = true;
-  $('btnRegenerarIA').disabled = true;
-
+  $('cargandoIA').style.display = 'block'; $('errorIA').style.display = 'none'; $('resultadoIA').style.display = 'none';
+  $('btnGenerarIA').disabled = true; $('btnRegenerarIA').disabled = true;
   try {
     const resp = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
       method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-goog-api-key': obtenerClave(),
-      },
+      headers: { 'content-type': 'application/json', 'x-goog-api-key': obtenerClave() },
       body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: 'Eres un guionista experto en eventos de emprendimiento y educación de TREP CAMP. Escribes guiones para maestros de ceremonia y presentadores en español. Tu estilo es cálido, cercano, natural y motivador: nada acartonado ni seco, con energía, humor ligero cuando corresponde y frases que conectan con el público. Estructura los guiones con secciones claras (apertura, presentaciones, transiciones, cierre) e incluye acotaciones útiles entre corchetes, como [pausa] o [aplausos]. Responde únicamente con el guión, sin comentarios adicionales antes o después.' }],
-        },
+        system_instruction: { parts: [{ text: 'Eres un guionista experto en eventos de emprendimiento y educación de TREP CAMP. Escribes guiones para maestros de ceremonia y presentadores en español. Tu estilo es cálido, cercano, natural y motivador: nada acartonado ni seco, con energía, humor ligero cuando corresponde y frases que conectan con el público. Estructura los guiones con secciones claras (apertura, presentaciones, transiciones, cierre) e incluye acotaciones útiles entre corchetes, como [pausa] o [aplausos]. Responde únicamente con el guión, sin comentarios adicionales antes o después.' }] },
         contents: [{ role: 'user', parts: [{ text: `${contexto}\n\n${pedido}${extra}` }] }],
         generationConfig: { maxOutputTokens: 8000 },
       }),
     });
-
     if (!resp.ok) {
       const err = await resp.json().catch(() => null);
       const msg = err?.error?.message || `Error ${resp.status}`;
-      if (resp.status === 400 || resp.status === 401 || resp.status === 403) {
-        mostrarErrorIA('La clave API no es válida. Revísala en el botón ⚙️ IA de la barra lateral (se consigue gratis en aistudio.google.com).');
-      } else if (resp.status === 429) {
-        mostrarErrorIA('Se alcanzó el límite gratuito de la IA por ahora. Espera un minuto e inténtalo de nuevo.');
-      } else {
-        mostrarErrorIA('No se pudo generar el guión: ' + msg);
-      }
+      if ([400,401,403].includes(resp.status)) mostrarErrorIA('La clave API no es válida. Revísala en el botón ⚙️ IA (se consigue gratis en aistudio.google.com).');
+      else if (resp.status === 429) mostrarErrorIA('Se alcanzó el límite gratuito de la IA por ahora. Espera un minuto e inténtalo de nuevo.');
+      else mostrarErrorIA('No se pudo generar el guión: ' + msg);
       return;
     }
-
     const data = await resp.json();
-    textoPropuesto = (data.candidates?.[0]?.content?.parts || [])
-      .map(p => p.text || '')
-      .join('\n')
-      .trim();
-
-    if (!textoPropuesto) {
-      mostrarErrorIA('La IA no devolvió texto. Inténtalo de nuevo.');
-      return;
-    }
-
-    $('resultadoIA').textContent = textoPropuesto;
-    $('resultadoIA').style.display = 'block';
-    $('btnAceptarIA').style.display = '';
-    $('btnRegenerarIA').style.display = '';
-    $('btnGenerarIA').style.display = 'none';
+    textoPropuesto = (data.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('\n').trim();
+    if (!textoPropuesto) { mostrarErrorIA('La IA no devolvió texto. Inténtalo de nuevo.'); return; }
+    $('resultadoIA').textContent = textoPropuesto; $('resultadoIA').style.display = 'block';
+    $('btnAceptarIA').style.display = ''; $('btnRegenerarIA').style.display = ''; $('btnGenerarIA').style.display = 'none';
   } catch (e) {
     mostrarErrorIA('No se pudo conectar con el servicio de IA. Revisa tu conexión a internet e inténtalo de nuevo.');
   } finally {
-    $('cargandoIA').style.display = 'none';
-    $('btnGenerarIA').disabled = false;
-    $('btnRegenerarIA').disabled = false;
+    $('cargandoIA').style.display = 'none'; $('btnGenerarIA').disabled = false; $('btnRegenerarIA').disabled = false;
   }
 }
+function mostrarErrorIA(msg) { const el = $('errorIA'); el.textContent = msg; el.style.display = 'block'; }
 
-function mostrarErrorIA(msg) {
-  const el = $('errorIA');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
-// ================= PWA: service worker =================
+// ================= PWA =================
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
@@ -1162,7 +1190,11 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
 // ================= Inicio =================
 (async () => {
   actualizarConexion();
-  if (SUPABASE_URL.includes('PEGAR')) return;
+  if (!configurado) {
+    avisoLogin('La app aún no está conectada a Supabase. Falta configurar SUPABASE_URL y SUPABASE_ANON_KEY en index.html.');
+    $('btnEntrar').disabled = true;
+    return;
+  }
   const { data: { session } } = await sb.auth.getSession();
   if (session) await iniciarSesion();
 })();
