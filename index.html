@@ -46,8 +46,8 @@
   .caja-login .logo h1 span { color: var(--accent); }
   .caja-login .logo p { color: var(--muted); font-size: 13px; margin-top: 4px; }
   .caja-login label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; margin: 14px 0 6px; }
-  .caja-login input { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; font-size: 14.5px; outline: none; }
-  .caja-login input:focus { border-color: var(--accent); }
+  .caja-login input, .caja-login select { width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; font-size: 14.5px; outline: none; background: #fff; color: var(--text); }
+  .caja-login input:focus, .caja-login select:focus { border-color: var(--accent); }
   .caja-login .btn { width: 100%; margin-top: 20px; padding: 12px; font-size: 14.5px; }
   .caja-login .alterna { text-align: center; margin-top: 16px; font-size: 13.5px; color: var(--muted); }
   .caja-login .alterna a { color: var(--accent); cursor: pointer; font-weight: 600; text-decoration: none; }
@@ -272,6 +272,10 @@
       <div id="camposRegistro" style="display:none;">
         <label>Nombre completo</label>
         <input type="text" id="regNombre" placeholder="Tu nombre">
+        <label>¿A qué Hub perteneces?</label>
+        <select id="regHub">
+          <option value="">— Elige tu estado (si eres ambassador) —</option>
+        </select>
       </div>
       <label>Correo electrónico</label>
       <input type="email" id="loginCorreo" placeholder="tucorreo@ejemplo.com" autocomplete="username">
@@ -552,8 +556,19 @@ function mostrarPantalla(nombre) {
 }
 
 // ================= Autenticación =================
+async function cargarHubsRegistro() {
+  if ($('regHub').options.length > 1) return;
+  const { data } = await sb.from('hubs').select('id, nombre').order('nombre');
+  for (const h of (data || [])) {
+    const op = document.createElement('option');
+    op.value = h.id; op.textContent = h.nombre;
+    $('regHub').appendChild(op);
+  }
+}
+
 function alternarRegistro() {
   modoRegistro = !modoRegistro;
+  if (modoRegistro) cargarHubsRegistro();
   $('camposRegistro').style.display = modoRegistro ? 'block' : 'none';
   $('btnEntrar').textContent = modoRegistro ? 'Crear cuenta' : 'Entrar';
   $('alternaLogin').innerHTML = modoRegistro
@@ -588,7 +603,7 @@ $('btnEntrar').onclick = async () => {
     if (modoRegistro) {
       const nombre = $('regNombre').value.trim();
       if (!nombre) { avisoLogin('Escribe tu nombre.'); return; }
-      const { data, error } = await sb.auth.signUp({ email: correo, password: pass, options: { data: { nombre } } });
+      const { data, error } = await sb.auth.signUp({ email: correo, password: pass, options: { data: { nombre, hub_id: $('regHub').value || '' } } });
       if (error) { avisoLogin(traducirErrorAuth(error.message)); return; }
       if (!data.session) { avisoLogin('Cuenta creada. Revisa tu correo y confirma tu dirección para poder entrar.', 'ok'); return; }
       await iniciarSesion();
@@ -692,7 +707,7 @@ async function mostrarHubs() {
     div.className = 'tarjeta-hub';
     div.innerHTML = `<div class="nombre">📍 ${escapar(h.nombre)}</div>
                      <div class="datos">${total} evento${total===1?'':'s'}${estaSem ? ` · <b>${estaSem} esta semana</b>` : ''}</div>`;
-    div.onclick = () => entrarHub({ id: h.id, nombre: h.nombre }, true);
+    div.onclick = () => entrarHub({ id: h.id, nombre: h.nombre }, perfil.rol !== 'admin');
     $('gridHubs').appendChild(div);
   }
 }
@@ -717,7 +732,7 @@ async function buscarGlobal() {
     const est = estadoDe(e);
     div.innerHTML = `<div class="n">${escapar(e.nombre) || '(Sin nombre)'}</div>
                      <div class="h">📍 ${escapar(e.hubs?.nombre || '')} · ${formatearFecha(e)} · <span class="estado-evento ${est.clave}">${est.texto}</span></div>`;
-    div.onclick = async () => { await entrarHub({ id: e.hub_id, nombre: e.hubs?.nombre || nombreHub(e.hub_id) }, true); abrirEvento(e.id); };
+    div.onclick = async () => { await entrarHub({ id: e.hub_id, nombre: e.hubs?.nombre || nombreHub(e.hub_id) }, perfil.rol !== 'admin'); abrirEvento(e.id); };
     cont.appendChild(div);
   }
 }
@@ -822,7 +837,7 @@ function renderLista() {
 async function abrirEvento(id) {
   eventoActual = eventos.find(e => e.id === id);
   if (!eventoActual) return;
-  esPropietario = !modoLectura && eventoActual.hub_id === perfil.hub_id;
+  esPropietario = !modoLectura && (perfil.rol === 'admin' || eventoActual.hub_id === perfil.hub_id);
 
   $('pantallaInicio').style.display = 'none';
   $('detalle').style.display = 'block';
