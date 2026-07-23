@@ -1,7 +1,7 @@
 // Service worker de TREP CAMP
 // Estrategia: "red primero" para la página (así se actualiza cuando hay internet)
 // y respaldo en caché para funcionar sin conexión.
-const CACHE = 'trepcamp-v3';
+const CACHE = 'trepcamp-v4';
 const ARCHIVOS = [
   './',
   './index.html',
@@ -29,8 +29,10 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET') return;
 
-  // Librería de Supabase (CDN): caché primero, es una versión estable
-  if (url.origin === 'https://cdn.jsdelivr.net') {
+  // Librería de Supabase y tipografía (CDN): caché primero, son versiones estables
+  if (url.origin === 'https://cdn.jsdelivr.net'
+      || url.origin === 'https://fonts.googleapis.com'
+      || url.origin === 'https://fonts.gstatic.com') {
     e.respondWith(
       caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
         const copia = resp.clone();
