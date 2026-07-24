@@ -255,10 +255,43 @@
 
   /* ============ MAIN ============ */
   #main { flex: 1; height: 100vh; overflow-y: auto; padding: 34px 40px 20px; }
-  #pantallaInicio { height: 78%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); text-align: center; }
-  #pantallaInicio .icono { font-size: 68px; margin-bottom: 18px; }
-  #pantallaInicio h2 { color: var(--text); margin-bottom: 10px; font-size: 25px; }
-  #pantallaInicio p { font-weight: 500; max-width: 420px; line-height: 1.6; }
+  #pantallaInicio { display: none; }
+  #pantallaInicio .dash-cab { margin-bottom: 26px; }
+  #pantallaInicio .dash-cab h2 { color: var(--text); margin-bottom: 8px; font-size: 26px; }
+  #pantallaInicio .dash-cab p { font-weight: 500; color: var(--muted); line-height: 1.6; }
+
+  /* ============ DASHBOARD ============ */
+  .dashboard { margin-bottom: 30px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+  .stat-tile {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 16px;
+    padding: 20px 22px; position: relative; overflow: hidden; box-shadow: var(--sombra);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .stat-tile:hover { transform: translateY(-3px); box-shadow: var(--sombra-alta); }
+  .stat-tile::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--azul); }
+  .stat-tile.t-total::before { background: var(--marino); }
+  .stat-tile.t-prox::before { background: var(--azul); }
+  .stat-tile.t-hoy::before { background: var(--lima); }
+  .stat-tile.t-fin::before { background: #A2957F; }
+  .stat-tile .num { font-size: 36px; font-weight: 900; letter-spacing: -1.4px; line-height: 1; color: var(--marino); }
+  .stat-tile .lbl { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .7px; color: var(--muted); margin-top: 9px; }
+  .dash-seccion-tit { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--marino); margin-bottom: 13px; }
+  .dash-lista { display: flex; flex-direction: column; gap: 9px; }
+  .dash-evento {
+    display: flex; align-items: center; gap: 15px; background: var(--panel);
+    border: 1px solid var(--border); border-left: 4px solid var(--azul); border-radius: 12px;
+    padding: 13px 17px; cursor: pointer; transition: transform .12s, box-shadow .12s;
+  }
+  .dash-evento:hover { transform: translateX(4px); box-shadow: var(--sombra); }
+  .dash-evento .fechabox { text-align: center; min-width: 54px; background: var(--accent-soft); border-radius: 11px; padding: 8px 6px; }
+  .dash-evento .fechabox .dia { font-size: 21px; font-weight: 900; color: var(--marino); line-height: 1; }
+  .dash-evento .fechabox .mes { font-size: 9.5px; font-weight: 800; text-transform: uppercase; color: var(--azul); margin-top: 3px; letter-spacing: .5px; }
+  .dash-evento .info2 { flex: 1; overflow: hidden; }
+  .dash-evento .info2 .n { font-weight: 800; font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .dash-evento .info2 .m { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 4px; }
+  .dash-vacio { color: var(--muted); font-size: 13.5px; font-weight: 500; font-style: italic; padding: 10px 2px; }
+  @media (max-width: 720px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
   #detalle { display: none; max-width: 1000px; margin: 0 auto; }
   #avisoLectura {
@@ -554,6 +587,8 @@
     </div>
     <input id="buscadorGlobal" type="text" placeholder="🔍 Buscar un evento en todos los Hubs…">
     <div id="resultadosBusqueda"></div>
+    <div id="dashboardHubs" class="dashboard"></div>
+    <div class="dash-seccion-tit" style="margin-top:4px;">🌎 Hubs por estado</div>
     <div class="grid-hubs" id="gridHubs"></div>
     <div class="soporte">
       <div class="caja">
@@ -611,9 +646,11 @@
 
 <main id="main" style="display:none;">
   <div id="pantallaInicio">
-    <div class="icono">📋</div>
-    <h2>Bienvenido al organizador de TREP CAMP</h2>
-    <p id="msgInicio">Selecciona un evento de la lista para ver sus detalles.</p>
+    <div class="dash-cab">
+      <h2 id="tituloInicio">📋 Panel del Hub</h2>
+      <p id="msgInicio">Selecciona un evento de la lista para ver sus detalles.</p>
+    </div>
+    <div id="dashboardHub" class="dashboard"></div>
   </div>
 
   <div id="detalle">
@@ -799,6 +836,69 @@ function formatearFecha(ev) {
 }
 function nombreHub(id) { return (todosLosHubs.find(h => h.id === id) || {}).nombre || ''; }
 
+// ================= Dashboard (panel de inicio) =================
+const MESES_CORTOS = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+function calcularResumen(lista) {
+  let prox = 0, hoyN = 0, fin = 0;
+  const proximos = [];
+  for (const e of lista) {
+    const c = estadoDe(e).clave;
+    if (c === 'proximo') { prox++; proximos.push(e); }
+    else if (c === 'hoy') { hoyN++; proximos.push(e); }
+    else if (c === 'finalizado') fin++;
+  }
+  proximos.sort((a, b) => (a.fecha || '9') < (b.fecha || '9') ? -1 : 1);
+  return { total: lista.length, prox, hoy: hoyN, fin, proximos: proximos.slice(0, 6) };
+}
+
+function renderDashboard(contId, lista, global) {
+  const cont = $(contId);
+  if (!cont) return;
+  const r = calcularResumen(lista);
+  const tile = (cls, num, lbl) => `<div class="stat-tile ${cls}"><div class="num">${num}</div><div class="lbl">${lbl}</div></div>`;
+  let html = `<div class="stats-grid">
+    ${tile('t-total', r.total, 'Eventos en total')}
+    ${tile('t-prox', r.prox, 'Próximos')}
+    ${tile('t-hoy', r.hoy, 'Hoy')}
+    ${tile('t-fin', r.fin, 'Finalizados')}
+  </div>`;
+  html += `<div class="dash-seccion-tit">📅 Próximos eventos</div>`;
+  if (!r.proximos.length) {
+    html += `<div class="dash-vacio">No hay eventos próximos programados.</div>`;
+  } else {
+    html += '<div class="dash-lista">';
+    for (const e of r.proximos) {
+      let dia = '—', mes = '';
+      if (e.fecha) { const p = e.fecha.split('-'); dia = +p[2]; mes = MESES_CORTOS[+p[1] - 1]; }
+      const est = estadoDe(e);
+      const hub = global ? ` · 📍 ${escapar(e.hubs?.nombre || nombreHub(e.hub_id))}` : '';
+      html += `<div class="dash-evento" data-id="${e.id}" data-hub="${e.hub_id}">
+        <div class="fechabox"><div class="dia">${dia}</div><div class="mes">${mes}</div></div>
+        <div class="info2"><div class="n">${escapar(e.nombre) || '(Sin nombre)'}</div>
+          <div class="m"><span class="estado-evento ${est.clave}">${est.texto}</span>${e.hora_inicio ? ' · ' + e.hora_inicio : ''}${hub}</div></div>
+      </div>`;
+    }
+    html += '</div>';
+  }
+  cont.innerHTML = html;
+  cont.querySelectorAll('.dash-evento').forEach(el => {
+    el.onclick = async () => {
+      const id = el.dataset.id, hubId = el.dataset.hub;
+      if (global) {
+        const e = lista.find(x => x.id === id);
+        await entrarHub({ id: hubId, nombre: e?.hubs?.nombre || nombreHub(hubId) }, perfil.rol !== 'admin');
+      }
+      abrirEvento(id);
+    };
+  });
+}
+
+function mostrarInicioHub() {
+  $('detalle').style.display = 'none';
+  $('pantallaInicio').style.display = 'block';
+  renderDashboard('dashboardHub', eventos, false);
+}
+
 // ================= Navegación entre pantallas =================
 function mostrarPantalla(nombre) {
   ['pantallaLogin', 'pantallaPendiente', 'vistaHubs', 'vistaAdmin'].forEach(p =>
@@ -881,7 +981,7 @@ function traducirErrorAuth(msg) {
 async function cerrarSesion() {
   await sb.auth.signOut();
   perfil = null; hubActual = null; eventos = []; eventoActual = null;
-  $('detalle').style.display = 'none'; $('pantallaInicio').style.display = 'flex';
+  $('detalle').style.display = 'none'; $('pantallaInicio').style.display = 'none';
   mostrarPantalla('pantallaLogin');
 }
 $('btnSalir').onclick = cerrarSesion;
@@ -951,7 +1051,11 @@ async function mostrarHubs() {
   const porHub = {};
   (sem || []).forEach(e => { porHub[e.hub_id] = (porHub[e.hub_id]||0) + 1; });
 
-  $('subHubs').textContent = `Hola, ${perfil.nombre || 'bienvenido'}. Entra a cualquier Hub para revisar sus eventos y materiales.`;
+  // Dashboard global: todos los eventos de todos los Hubs
+  const { data: todos } = await sb.from('eventos').select('id, nombre, fecha, hora_inicio, hub_id, hubs!eventos_hub_id_fkey(nombre)').order('fecha');
+  renderDashboard('dashboardHubs', todos || [], true);
+
+  $('subHubs').textContent = `Hola, ${perfil.nombre || 'bienvenido'}. Aquí tienes el resumen de todos los Hubs.`;
   $('gridHubs').innerHTML = '';
   for (const h of hubs) {
     const total = h.eventos?.[0]?.count ?? 0;
@@ -1044,10 +1148,12 @@ async function entrarHub(hub, lectura) {
   $('btnNuevo').style.display = modoLectura ? 'none' : 'block';
   $('btnConfig').style.display = modoLectura ? 'none' : 'block';
   $('detalle').style.display = 'none';
-  $('pantallaInicio').style.display = 'flex';
-  $('msgInicio').textContent = modoLectura ? 'Selecciona un evento de la lista para revisarlo.' : 'Crea un evento nuevo o selecciona uno de la lista.';
+  $('pantallaInicio').style.display = 'block';
+  $('tituloInicio').textContent = '📋 Panel de ' + (hub?.nombre || 'tu Hub');
+  $('msgInicio').textContent = modoLectura ? 'Resumen del Hub. Selecciona un evento de la lista para revisarlo.' : 'Resumen de tu Hub. Crea un evento nuevo o selecciona uno de la lista.';
 
   await cargarEventos();
+  renderDashboard('dashboardHub', eventos, false);
 }
 $('btnVolverHubs').onclick = mostrarHubs;
 
@@ -1135,7 +1241,7 @@ $('btnEliminar').onclick = async () => {
   if (error) { mostrarBadgeError('No se pudo eliminar.'); return; }
   eventos = eventos.filter(e => e.id !== eventoActual.id);
   eventoActual = null;
-  $('detalle').style.display = 'none'; $('pantallaInicio').style.display = 'flex';
+  mostrarInicioHub();
   renderLista();
 };
 
