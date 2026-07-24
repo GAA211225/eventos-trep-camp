@@ -293,6 +293,68 @@
   .dash-vacio { color: var(--muted); font-size: 13.5px; font-weight: 500; font-style: italic; padding: 10px 2px; }
   @media (max-width: 720px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
 
+  /* Filtros de la lista lateral */
+  .filtros-lista { display: flex; gap: 6px; margin: 0 16px 10px; }
+  .chip-filtro {
+    flex: 1; padding: 7px 4px; border: none; border-radius: 8px; cursor: pointer;
+    background: rgba(255,255,255,.07); color: #B9C4E6; font-family: inherit;
+    font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; transition: background .14s, color .14s;
+  }
+  .chip-filtro:hover { background: rgba(255,255,255,.13); }
+  .chip-filtro.activo { background: var(--lima); color: var(--marino); }
+
+  /* Pestañas de vista (Resumen / Tarjetas / Calendario) */
+  .vista-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 2px solid var(--border); padding-bottom: 2px; flex-wrap: wrap; }
+  .vista-tab {
+    padding: 10px 18px; border: none; background: transparent; cursor: pointer; font-family: inherit;
+    font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted);
+    border-bottom: 3px solid transparent; margin-bottom: -2px; border-radius: 8px 8px 0 0; transition: color .14s, border-color .14s;
+  }
+  .vista-tab:hover { color: var(--marino); background: rgba(86,118,204,.07); }
+  .vista-tab.activo { color: var(--marino); border-bottom-color: var(--lima); }
+
+  /* Vista de tarjetas (CRM) */
+  .grid-tarjetas-ev { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+  .tarjeta-ev {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px;
+    cursor: pointer; position: relative; overflow: hidden; box-shadow: var(--sombra);
+    transition: transform .16s, box-shadow .16s, border-color .16s;
+  }
+  .tarjeta-ev::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: linear-gradient(180deg, var(--azul), var(--lima)); transform: scaleY(0); transform-origin: top; transition: transform .22s; }
+  .tarjeta-ev:hover { transform: translateY(-4px); box-shadow: var(--sombra-alta); border-color: var(--azul); }
+  .tarjeta-ev:hover::before { transform: scaleY(1); }
+  .tarjeta-ev-top { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .colab-tag { font-size: 10px; font-weight: 800; color: var(--marino); background: var(--accent-soft); border-radius: 20px; padding: 2px 9px; text-transform: uppercase; letter-spacing: .4px; }
+  .tarjeta-ev-nombre { font-size: 17px; font-weight: 800; letter-spacing: -.3px; line-height: 1.25; margin-bottom: 10px; }
+  .tarjeta-ev-meta { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 4px; }
+
+  /* Calendario */
+  .cal-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .cal-titulo { font-size: 18px; font-weight: 900; color: var(--marino); text-transform: capitalize; }
+  .cal-nav {
+    width: 38px; height: 38px; border: none; border-radius: 10px; cursor: pointer; background: var(--marino); color: var(--crema);
+    font-size: 18px; font-weight: 800; line-height: 1; transition: background .14s, transform .12s;
+  }
+  .cal-nav:hover { background: var(--azul); transform: translateY(-1px); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; }
+  .cal-dow { text-align: center; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); padding-bottom: 4px; }
+  .cal-celda { min-height: 92px; background: var(--panel); border: 1px solid var(--border); border-radius: 11px; padding: 7px 8px; overflow: hidden; }
+  .cal-celda.vacia { background: transparent; border: none; }
+  .cal-celda.hoy { border-color: var(--lima); box-shadow: inset 0 0 0 2px var(--lima); }
+  .cal-num { font-size: 12.5px; font-weight: 800; color: var(--marino); margin-bottom: 5px; }
+  .cal-celda.hoy .cal-num { color: var(--marino); }
+  .cal-ev {
+    background: var(--accent-soft); color: var(--marino); border-radius: 6px; padding: 3px 7px; margin-bottom: 4px;
+    font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    border-left: 3px solid var(--azul); transition: background .12s;
+  }
+  .cal-ev:hover { background: var(--lima); }
+  @media (max-width: 720px) {
+    .cal-celda { min-height: 62px; padding: 4px 5px; }
+    .cal-ev { font-size: 9px; padding: 2px 4px; }
+    .cal-dow { font-size: 8.5px; }
+  }
+
   #detalle { display: none; max-width: 1000px; margin: 0 auto; }
   #avisoLectura {
     display: none; background: #FFF6D9; border: 1px solid #F5DE96; border-left: 5px solid #E8B93B;
@@ -637,6 +699,11 @@
   <button id="btnNuevo">＋ Nuevo evento</button>
   <div id="estadoConexion" class="online">● En línea</div>
   <input id="buscador" type="text" placeholder="Buscar evento…">
+  <div id="filtrosLista" class="filtros-lista">
+    <button class="chip-filtro activo" data-f="todos">Todos</button>
+    <button class="chip-filtro" data-f="prox">Próximos</button>
+    <button class="chip-filtro" data-f="pas">Pasados</button>
+  </div>
   <div id="listaEventos"></div>
   <div id="pieSidebar">
     <button id="btnConfig" title="Configurar clave de IA">⚙️ IA</button>
@@ -650,7 +717,16 @@
       <h2 id="tituloInicio">📋 Panel del Hub</h2>
       <p id="msgInicio">Selecciona un evento de la lista para ver sus detalles.</p>
     </div>
-    <div id="dashboardHub" class="dashboard"></div>
+    <div class="vista-tabs">
+      <button class="vista-tab activo" data-v="resumen">📊 Resumen</button>
+      <button class="vista-tab" data-v="tarjetas">🗂️ Tarjetas</button>
+      <button class="vista-tab" data-v="calendario">📅 Calendario</button>
+    </div>
+    <div id="vistaResumen" class="vista-cont">
+      <div id="dashboardHub" class="dashboard"></div>
+    </div>
+    <div id="vistaTarjetas" class="vista-cont" style="display:none;"></div>
+    <div id="vistaCalendario" class="vista-cont" style="display:none;"></div>
   </div>
 
   <div id="detalle">
@@ -896,7 +972,91 @@ function renderDashboard(contId, lista, global) {
 function mostrarInicioHub() {
   $('detalle').style.display = 'none';
   $('pantallaInicio').style.display = 'block';
-  renderDashboard('dashboardHub', eventos, false);
+  renderInicio();
+}
+
+// ---- Cambio de vista: Resumen / Tarjetas / Calendario ----
+let vistaActual = 'resumen';
+let filtroLista = 'todos';
+
+function activarVista(v) {
+  vistaActual = v;
+  document.querySelectorAll('.vista-tab').forEach(t => t.classList.toggle('activo', t.dataset.v === v));
+  $('vistaResumen').style.display = v === 'resumen' ? 'block' : 'none';
+  $('vistaTarjetas').style.display = v === 'tarjetas' ? 'block' : 'none';
+  $('vistaCalendario').style.display = v === 'calendario' ? 'block' : 'none';
+  renderInicio();
+}
+function renderInicio() {
+  if (vistaActual === 'resumen') renderDashboard('dashboardHub', eventos, false);
+  else if (vistaActual === 'tarjetas') renderTarjetas();
+  else renderCalendario();
+}
+document.querySelectorAll('.vista-tab').forEach(t => t.onclick = () => activarVista(t.dataset.v));
+
+document.querySelectorAll('#filtrosLista .chip-filtro').forEach(c => c.onclick = () => {
+  filtroLista = c.dataset.f;
+  document.querySelectorAll('#filtrosLista .chip-filtro').forEach(x => x.classList.toggle('activo', x === c));
+  renderLista();
+});
+
+// ---- Vista de tarjetas (estilo CRM) ----
+function renderTarjetas() {
+  const cont = $('vistaTarjetas');
+  if (!eventos.length) { cont.innerHTML = '<div class="dash-vacio">Este Hub aún no tiene eventos.</div>'; return; }
+  const orden = [...eventos].sort((a, b) => (a.fecha || '9999') < (b.fecha || '9999') ? -1 : 1);
+  let html = '<div class="grid-tarjetas-ev">';
+  for (const e of orden) {
+    const est = estadoDe(e);
+    const colab = e.hub_id !== hubActual.id;
+    html += `<div class="tarjeta-ev" data-id="${e.id}">
+      <div class="tarjeta-ev-top"><span class="estado-evento ${est.clave}">${est.texto}</span>${colab ? '<span class="colab-tag">🤝 Colaboración</span>' : ''}</div>
+      <div class="tarjeta-ev-nombre">${escapar(e.nombre) || '(Sin nombre)'}</div>
+      <div class="tarjeta-ev-meta">📅 ${formatearFecha(e)}</div>
+      ${e.lugar ? `<div class="tarjeta-ev-meta">📍 ${escapar(e.lugar)}</div>` : ''}
+    </div>`;
+  }
+  html += '</div>';
+  cont.innerHTML = html;
+  cont.querySelectorAll('.tarjeta-ev').forEach(el => el.onclick = () => abrirEvento(el.dataset.id));
+}
+
+// ---- Vista de calendario mensual ----
+let calRef = new Date(); calRef.setDate(1); calRef.setHours(0, 0, 0, 0);
+function renderCalendario() {
+  const cont = $('vistaCalendario');
+  const year = calRef.getFullYear(), month = calRef.getMonth();
+  const diaSemInicio = (new Date(year, month, 1).getDay() + 6) % 7; // lunes = 0
+  const diasEnMes = new Date(year, month + 1, 0).getDate();
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+
+  const porDia = {};
+  for (const e of eventos) {
+    if (!e.fecha) continue;
+    const [y, m, d] = e.fecha.split('-').map(Number);
+    if (y === year && m - 1 === month) (porDia[d] = porDia[d] || []).push(e);
+  }
+
+  const nombreMes = calRef.toLocaleDateString('es-MX', { month: 'long', year: 'numeric' });
+  let html = `<div class="cal-cab">
+    <button class="cal-nav" id="calPrev">‹</button>
+    <div class="cal-titulo">${nombreMes}</div>
+    <button class="cal-nav" id="calNext">›</button>
+  </div><div class="cal-grid">`;
+  for (const d of ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']) html += `<div class="cal-dow">${d}</div>`;
+  for (let i = 0; i < diaSemInicio; i++) html += '<div class="cal-celda vacia"></div>';
+  for (let d = 1; d <= diasEnMes; d++) {
+    const evs = porDia[d] || [];
+    const esHoy = (year === hoy.getFullYear() && month === hoy.getMonth() && d === hoy.getDate());
+    html += `<div class="cal-celda${esHoy ? ' hoy' : ''}"><div class="cal-num">${d}</div>${
+      evs.map(e => `<div class="cal-ev" data-id="${e.id}" title="${escapar(e.nombre)}">${escapar(e.nombre) || '(Sin nombre)'}</div>`).join('')
+    }</div>`;
+  }
+  html += '</div>';
+  cont.innerHTML = html;
+  $('calPrev').onclick = () => { calRef.setMonth(calRef.getMonth() - 1); renderCalendario(); };
+  $('calNext').onclick = () => { calRef.setMonth(calRef.getMonth() + 1); renderCalendario(); };
+  cont.querySelectorAll('.cal-ev').forEach(el => el.onclick = () => abrirEvento(el.dataset.id));
 }
 
 // ================= Navegación entre pantallas =================
@@ -1152,8 +1312,13 @@ async function entrarHub(hub, lectura) {
   $('tituloInicio').textContent = '📋 Panel de ' + (hub?.nombre || 'tu Hub');
   $('msgInicio').textContent = modoLectura ? 'Resumen del Hub. Selecciona un evento de la lista para revisarlo.' : 'Resumen de tu Hub. Crea un evento nuevo o selecciona uno de la lista.';
 
+  // Reiniciar filtros y vista al entrar a un Hub
+  filtroLista = 'todos';
+  document.querySelectorAll('#filtrosLista .chip-filtro').forEach(x => x.classList.toggle('activo', x.dataset.f === 'todos'));
+  calRef = new Date(); calRef.setDate(1); calRef.setHours(0, 0, 0, 0);
+
   await cargarEventos();
-  renderDashboard('dashboardHub', eventos, false);
+  activarVista('resumen');
 }
 $('btnVolverHubs').onclick = mostrarHubs;
 
@@ -1173,7 +1338,12 @@ async function cargarEventos() {
 function renderLista() {
   const cont = $('listaEventos');
   const filtro = $('buscador').value.trim().toLowerCase();
-  const visibles = eventos.filter(e => !filtro || (e.nombre || '').toLowerCase().includes(filtro));
+  const visibles = eventos.filter(e => {
+    if (filtro && !(e.nombre || '').toLowerCase().includes(filtro)) return false;
+    if (filtroLista === 'prox') { const c = estadoDe(e).clave; return c === 'proximo' || c === 'hoy'; }
+    if (filtroLista === 'pas') return estadoDe(e).clave === 'finalizado';
+    return true;
+  });
 
   cont.innerHTML = '';
   if (!visibles.length) {
